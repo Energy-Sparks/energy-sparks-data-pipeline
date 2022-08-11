@@ -1,0 +1,9 @@
+# Used by the dotenv library to load environment variables.
+# See serverless.yml
+.env.development
+.env.test
+.env.production
+.env
+
+.bundle
+.serverless
