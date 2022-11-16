@@ -51,8 +51,8 @@ module DataPipeline
 
       def next_bucket_finder(key)
         case key
-        when /csv\Z/ then @environment['AMR_DATA_BUCKET']
-        when /zip\Z/ then @environment['COMPRESSED_BUCKET']
+        when /csv\Z/i then @environment['AMR_DATA_BUCKET']
+        when /zip\Z/i then @environment['COMPRESSED_BUCKET']
         else @environment['UNPROCESSABLE_BUCKET']
         end
       end
