@@ -63,6 +63,10 @@ module DataPipeline
         file_event(filename: 'sheffield/export.csv', bucket: 'file-bucket')
       end
 
+      def self.uppercase_csv_added
+        file_event(filename: 'sheffield/export.CSV', bucket: 'file-bucket')
+      end
+
       def self.cr_csv_added
         file_event(filename: 'sheffield/cr.csv', bucket: 'file-bucket')
       end
@@ -85,6 +89,10 @@ module DataPipeline
 
       def self.zip_added
         file_event(filename: 'sheffield/export.zip', bucket: 'file-bucket')
+      end
+
+      def self.uppercase_zip_added
+        file_event(filename: 'sheffield/export.ZIP', bucket: 'file-bucket')
       end
 
       def self.image_added

@@ -47,6 +47,10 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: unknown_file }
           when  'sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
             { body: sheffield_gas_csv }
+          when 'sheffield/export.CSV'
+            { body: sheffield_csv }
+          when 'sheffield/export.ZIP'
+            { body: sheffield_zip }
           else
             'NotFound'
           end
@@ -71,7 +75,18 @@ describe DataPipeline::Handlers::ProcessFile do
       end
     end
 
-    describe 'when the file is a CSV' do
+    describe 'when the file is a .CSV' do
+      let(:event){ DataPipeline::Support::Events.uppercase_csv_added }
+
+      it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.CSV')
+        expect(request[:params][:bucket]).to eq('data-bucket')
+      end
+    end
+
+    describe 'when the file is a .csv file' do
 
       let(:event){ DataPipeline::Support::Events.csv_added }
 
@@ -80,7 +95,6 @@ describe DataPipeline::Handlers::ProcessFile do
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to eq('sheffield/export.csv')
         expect(request[:params][:bucket]).to eq('data-bucket')
-
       end
 
       it 'returns a success code' do
@@ -136,7 +150,23 @@ describe DataPipeline::Handlers::ProcessFile do
 
     end
 
-    describe 'when the file is a zip' do
+    describe 'when the file is a .ZIP' do
+
+      let(:event){ DataPipeline::Support::Events.uppercase_zip_added }
+
+      it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.ZIP')
+        expect(request[:params][:bucket]).to eq('compressed-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
+    end
+
+    describe 'when the file is a .zip' do
 
       let(:event){ DataPipeline::Support::Events.zip_added }
 
