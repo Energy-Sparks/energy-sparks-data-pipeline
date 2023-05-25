@@ -107,6 +107,10 @@ module DataPipeline
         file_event(filename: 'npower-eon/export.xlsx', bucket: 'file-bucket')
       end
 
+      def self.xlsx_multi_added
+        file_event(filename: 'bryt/multi-sheet.xlsx', bucket: 'file-bucket')
+      end
+
       def self.uppercase_xlsx_added
         file_event(filename: 'npower-eon/export.XLSX', bucket: 'file-bucket')
       end

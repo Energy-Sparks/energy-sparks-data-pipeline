@@ -7,6 +7,7 @@ describe DataPipeline::Handlers::ConvertFile do
   describe '#process' do
     let(:npower_xls)   { File.open('spec/support/files/npower-eon_export.xls') }
     let(:npower_xlsx)  { File.open('spec/support/files/npower-eon_export.xlsx') }
+    let(:bryt_xlsx)  { File.open('spec/support/files/bryt_multi-sheet.xlsx') }
     let(:unknown_file) { File.open('spec/support/files/1x1.png') }
 
     let(:logger){ Logger.new(IO::NULL) }
@@ -29,6 +30,8 @@ describe DataPipeline::Handlers::ConvertFile do
             { body: npower_xls }
           when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
             { body: npower_xlsx }
+          when 'bryt/multi-sheet.xlsx'
+            { body: bryt_xlsx }
           when 'sheffield/image.png'
             { body: unknown_file}
           else
@@ -54,7 +57,22 @@ describe DataPipeline::Handlers::ConvertFile do
       end
     end
 
-   describe 'when the file is XLSX' do
+    describe 'when the file is xlsx and has multiple sheets' do
+      let(:event) { DataPipeline::Support::Events.xlsx_multi_added }
+
+      it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('bryt/multi-sheet.xlsx.csv')
+        expect(request[:params][:bucket]).to eq('process-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
+    end
+
+    describe 'when the file is XLSX' do
       let(:event) { DataPipeline::Support::Events.uppercase_xlsx_added }
 
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
