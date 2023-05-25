@@ -48,8 +48,8 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.xlsx.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
+        expect(request[:params][:key]).to eq('npower-eon/export.xlsx.csv')
       end
 
       it 'returns a success code' do
@@ -63,8 +63,8 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('bryt/multi-sheet.xlsx.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
+        expect(request[:params][:key]).to eq('bryt/multi-sheet.xlsx.csv')
       end
 
       it 'returns a success code' do
@@ -78,8 +78,8 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.XLSX.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
+        expect(request[:params][:key]).to eq('npower-eon/export.XLSX.csv')
       end
 
       it 'returns a success code' do
@@ -93,8 +93,8 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.xls.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
+        expect(request[:params][:key]).to eq('npower-eon/export.xls.csv')
       end
 
       it 'returns a success code' do
@@ -108,8 +108,8 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the converted file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.XLS.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
+        expect(request[:params][:key]).to eq('npower-eon/export.XLS.csv')
       end
 
       it 'returns a success code' do
@@ -123,14 +123,13 @@ describe DataPipeline::Handlers::ConvertFile do
       it 'puts the file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/image.png')
         expect(request[:params][:bucket]).to eq('unprocessable-bucket')
+        expect(request[:params][:key]).to eq('sheffield/image.png')
       end
 
       it 'returns a success code' do
         expect(response[:statusCode]).to eq(200)
       end
-
     end
   end
 end
