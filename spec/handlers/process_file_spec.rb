@@ -13,6 +13,8 @@ describe DataPipeline::Handlers::ProcessFile do
     let(:highlands_invalid_character_csv)       { File.open('spec/support/files/highlands-invalid-character.csv', "r:UTF-8") }
     let(:sheffield_gas_csv)   { File.open('spec/support/files/sheffield_export.csv') }
     let(:sheffield_zip)       { File.open('spec/support/files/sheffield_export.zip') }
+    let(:npower_xls)          { File.open('spec/support/files/npower-eon_export.xls') }
+    let(:npower_xlsx)         { File.open('spec/support/files/npower-eon_export.xlsx') }
     let(:unknown_file)        { File.open('spec/support/files/1x1.png') }
     let(:logger) { Logger.new(IO::NULL) }
     let(:client) { Aws::S3::Client.new(stub_responses: true) }
@@ -20,7 +22,8 @@ describe DataPipeline::Handlers::ProcessFile do
       {
         'AMR_DATA_BUCKET' => 'data-bucket',
         'COMPRESSED_BUCKET' => 'compressed-bucket',
-        'UNPROCESSABLE_BUCKET' => 'unprocessable-bucket'
+        'UNPROCESSABLE_BUCKET' => 'unprocessable-bucket',
+        'SPREADSHEET_BUCKET' => 'spreadsheet-bucket'
       }
     }
 
@@ -31,7 +34,7 @@ describe DataPipeline::Handlers::ProcessFile do
       client.stub_responses(
         :get_object, ->(context) {
           case context.params[:key]
-          when 'sheffield/export.csv'
+          when 'sheffield/export.csv', 'sheffield/export.CSV'
             { body: sheffield_csv }
           when 'sheffield/cr.csv'
             { body: cr_csv }
@@ -41,16 +44,16 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: highlands_invalid_character_csv }
           when 'highlands.csv'
             { body: highlands_csv }
-          when 'sheffield/export.zip'
+          when 'sheffield/export.zip', 'sheffield/export.ZIP'
             { body: sheffield_zip }
           when 'sheffield/image.png'
             { body: unknown_file }
           when  'sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
             { body: sheffield_gas_csv }
-          when 'sheffield/export.CSV'
-            { body: sheffield_csv }
-          when 'sheffield/export.ZIP'
-            { body: sheffield_zip }
+          when 'npower-eon/export.xls', 'npower-eon/export.XLS'
+            { body: npower_xls }
+          when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
+            { body: npower_xlsx }
           else
             'NotFound'
           end
@@ -60,8 +63,7 @@ describe DataPipeline::Handlers::ProcessFile do
     end
 
     describe 'when the file is a sheffield gas CSV with spaces in the filename' do
-
-      let(:event){ DataPipeline::Support::Events.csv_sheffield_gas_added }
+      let(:event) { DataPipeline::Support::Events.csv_sheffield_gas_added }
 
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -76,7 +78,7 @@ describe DataPipeline::Handlers::ProcessFile do
     end
 
     describe 'when the file is a .CSV' do
-      let(:event){ DataPipeline::Support::Events.uppercase_csv_added }
+      let(:event) { DataPipeline::Support::Events.uppercase_csv_added }
 
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -87,8 +89,7 @@ describe DataPipeline::Handlers::ProcessFile do
     end
 
     describe 'when the file is a .csv file' do
-
-      let(:event){ DataPipeline::Support::Events.csv_added }
+      let(:event) { DataPipeline::Support::Events.csv_added }
 
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -102,8 +103,7 @@ describe DataPipeline::Handlers::ProcessFile do
       end
 
       context 'when the file has mixed line endings' do
-
-        let(:event){ DataPipeline::Support::Events.cr_csv_added }
+        let(:event) { DataPipeline::Support::Events.cr_csv_added }
 
         it 'normalises them' do
           request = client.api_requests.last
@@ -112,47 +112,39 @@ describe DataPipeline::Handlers::ProcessFile do
       end
 
       context 'when the file has empty lines' do
-
-        let(:event){ DataPipeline::Support::Events.cr_empty_lines_csv_added }
+        let(:event) { DataPipeline::Support::Events.cr_empty_lines_csv_added }
 
         it 'removes them' do
           request = client.api_requests.last
-
           expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
         end
       end
 
       context 'when the file has nulls and empty lines' do
-
-        let(:event){ DataPipeline::Support::Events.highlands_csv_added }
+        let(:event) { DataPipeline::Support::Events.highlands_csv_added }
 
         it 'removes them' do
           request = client.api_requests.last
-
           expect(request[:params][:body].readlines.any?{|line| line.match?(/\u0000/)}).to eq(false)
           request[:params][:body].rewind
           expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
         end
       end
 
-        context 'when the file has nulls and empty lines and invalid characters' do
-
-        let(:event){ DataPipeline::Support::Events.highlands_invalid_character_csv_added }
+      context 'when the file has nulls and empty lines and invalid characters' do
+        let(:event) { DataPipeline::Support::Events.highlands_invalid_character_csv_added }
 
         it 'removes them' do
           request = client.api_requests.last
-
           expect(request[:params][:body].readlines.any?{|line| line.match?(/\u0000/)}).to eq(false)
           request[:params][:body].rewind
           expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
         end
       end
-
     end
 
     describe 'when the file is a .ZIP' do
-
-      let(:event){ DataPipeline::Support::Events.uppercase_zip_added }
+      let(:event) { DataPipeline::Support::Events.uppercase_zip_added }
 
       it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -167,7 +159,6 @@ describe DataPipeline::Handlers::ProcessFile do
     end
 
     describe 'when the file is a .zip' do
-
       let(:event){ DataPipeline::Support::Events.zip_added }
 
       it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
@@ -180,12 +171,70 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'returns a success code' do
         expect(response[:statusCode]).to eq(200)
       end
+    end
 
+    describe 'when the file is an .xls' do
+      let(:event) { DataPipeline::Support::Events.xls_added }
+
+      it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('npower-eon/export.xls')
+        expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
+    end
+
+    describe 'when the file is an .XLS' do
+      let(:event) { DataPipeline::Support::Events.uppercase_xls_added }
+
+      it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('npower-eon/export.XLS')
+        expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
+    end
+
+    describe 'when the file is an .xlsx' do
+      let(:event) { DataPipeline::Support::Events.xlsx_added }
+
+      it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('npower-eon/export.xlsx')
+        expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
+    end
+
+    describe 'when the file is an .XLSX' do
+      let(:event) { DataPipeline::Support::Events.uppercase_xlsx_added }
+
+      it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('npower-eon/export.XLSX')
+        expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
+      end
+
+      it 'returns a success code' do
+        expect(response[:statusCode]).to eq(200)
+      end
     end
 
     describe 'when the file is an image' do
-
-      let(:event){ DataPipeline::Support::Events.image_added }
+      let(:event) { DataPipeline::Support::Events.image_added }
 
       it 'puts the attachment file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -197,9 +246,6 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'returns a success code' do
         expect(response[:statusCode]).to eq(200)
       end
-
     end
-
   end
-
 end

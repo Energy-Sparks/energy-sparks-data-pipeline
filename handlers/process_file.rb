@@ -53,6 +53,7 @@ module DataPipeline
         case key
         when /csv\Z/i then @environment['AMR_DATA_BUCKET']
         when /zip\Z/i then @environment['COMPRESSED_BUCKET']
+        when /xlsx?\Z/i then @environment['SPREADSHEET_BUCKET']
         else @environment['UNPROCESSABLE_BUCKET']
         end
       end

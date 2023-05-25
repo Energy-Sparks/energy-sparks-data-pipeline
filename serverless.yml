@@ -12,6 +12,7 @@ custom:
     inbox_bucket: es-${self:custom.currentStage}-data-inbox
     process_bucket: es-${self:custom.currentStage}-data-process
     compressed_bucket: es-${self:custom.currentStage}-data-uncompressed
+    spreadsheet_bucket: es-${self:custom.currentStage}-data-spreadsheet
     amr_data_bucket: es-${self:custom.currentStage}-data-amr-data
     unprocessable_bucket: es-${self:custom.currentStage}-data-unprocessable
 
@@ -25,6 +26,7 @@ provider:
     INBOX_BUCKET: ${self:custom.buckets.inbox_bucket}
     PROCESS_BUCKET: ${self:custom.buckets.process_bucket}
     COMPRESSED_BUCKET: ${self:custom.buckets.compressed_bucket}
+    SPREADSHEET_BUCKET: ${self:custom.buckets.spreadsheet_bucket}
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
@@ -37,6 +39,7 @@ provider:
         - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
         - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
         - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
+        - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
         - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
         - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
 
@@ -60,6 +63,10 @@ functions:
     handler: handler.DataPipeline::Handler.uncompress_file
     events:
       - s3: ${self:provider.environment.COMPRESSED_BUCKET}
+  convert:
+    handler: handler.DataPipeline::Handler.convert_file
+    events:
+      - s3: ${self:provider.environment.SPREADSHEET_BUCKET}
 
 resources:
   Resources:
