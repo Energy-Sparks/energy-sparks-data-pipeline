@@ -15,12 +15,20 @@ module DataPipeline
         file = @client.get_object(bucket: bucket, key: key)
         prefix = key.split('/').first
 
-        response = begin
-          spreadsheet = Roo::Spreadsheet.open(file)
+        response = nil
+        begin
+          filename  = File.basename(key,".*")
+          extname  = File.extname(key)
+
+          tmp = Tempfile.new([filename,extname])
+          tmp.binmode
+          tmp.write file[:body].read
+          spreadsheet = Roo::Spreadsheet.open(tmp)
+
           content = spreadsheet.sheet(0).to_csv
-          move_to_process_bucket("#{prefix}/#{file.name}", content)
-        rescue Roo::Error => e
-          move_to_unprocessable_bucket(key, file)
+          response = move_to_process_bucket("#{prefix}/#{filename}#{extname}.csv", content)
+        rescue StandardError => e
+          response = move_to_unprocessable_bucket(key, file)
         end
         { statusCode: 200, body: JSON.generate(response: response) }
       end
@@ -29,7 +37,7 @@ module DataPipeline
 
       def move_to_process_bucket(key, content)
         @client.put_object(
-          bucket: @environment['AMR_DATA_BUCKET'],
+          bucket: @environment['PROCESS_BUCKET'],
           key: key,
           body: content,
         )
