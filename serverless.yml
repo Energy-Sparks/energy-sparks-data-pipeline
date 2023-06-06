@@ -16,6 +16,10 @@ custom:
     amr_data_bucket: es-${self:custom.currentStage}-data-amr-data
     unprocessable_bucket: es-${self:custom.currentStage}-data-unprocessable
 
+layers:
+  gemlayer:
+    path: ruby
+
 provider:
   name: aws
   runtime: ruby2.7
@@ -55,18 +59,34 @@ functions:
     handler: handler.DataPipeline::Handler.unpack_attachments
     events:
       - s3: ${self:provider.environment.INBOX_BUCKET}
+    layers:
+      - {Ref: GemlayerLambdaLayer}
+    environment:
+      GEM_PATH: /opt/2.7.0
   process-file:
     handler: handler.DataPipeline::Handler.process_file
     events:
       - s3: ${self:provider.environment.PROCESS_BUCKET}
+    layers:
+      - {Ref: GemlayerLambdaLayer}
+    environment:
+      GEM_PATH: /opt/2.7.0
   uncompress:
     handler: handler.DataPipeline::Handler.uncompress_file
     events:
       - s3: ${self:provider.environment.COMPRESSED_BUCKET}
+    layers:
+      - {Ref: GemlayerLambdaLayer}
+    environment:
+      GEM_PATH: /opt/2.7.0
   convert:
     handler: handler.DataPipeline::Handler.convert_file
     events:
       - s3: ${self:provider.environment.SPREADSHEET_BUCKET}
+    layers:
+      - {Ref: GemlayerLambdaLayer}
+    environment:
+      GEM_PATH: /opt/2.7.0
 
 resources:
   Resources:

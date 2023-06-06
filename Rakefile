@@ -1,26 +1,27 @@
 namespace :deploy do
 
+  def build_with_docker
+    system 'docker run --rm -it -v $PWD:/var/gem_build -w /var/gem_build amazon/aws-sam-cli-build-image-ruby2.7 bundle install --deployment --without test development --path=.'
+  end
+
   task :development do
-    system 'rm -Rf vendor'
-    if system 'bundle install --deployment --without test development'
+    system 'rm -Rf ruby'
+    if build_with_docker
       system 'sls deploy --stage development'
-      system 'bundle install --quiet --no-deployment --with test development'
     end
   end
 
   task :test do
-    system 'rm -Rf vendor'
-    if system 'bundle install --deployment --without test development'
+    system 'rm -Rf ruby'
+    if build_with_docker
       system 'sls deploy --stage test'
-      system 'bundle install --quiet --no-deployment --with test development'
     end
   end
 
   task :production do
-    system 'rm -Rf vendor'
-    if system 'bundle install --deployment --without test development'
+    system 'rm -Rf ruby'
+    if build_with_docker
       system 'sls deploy --stage production'
-      system 'bundle install --quiet --no-deployment --with test development'
     end
   end
 end
