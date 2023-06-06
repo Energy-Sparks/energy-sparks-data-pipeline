@@ -1,6 +1,7 @@
 require './handlers/process_file'
 require './handlers/uncompress_file'
 require './handlers/unpack_attachments'
+require './handlers/convert_file'
 
 module DataPipeline
   class Handler
@@ -26,6 +27,10 @@ module DataPipeline
 
     def self.unpack_attachments(event:, context:)
       run(handler: DataPipeline::Handlers::UnpackAttachments, event: event, context: context)
+    end
+
+    def self.convert_file(event:, context:)
+      run(handler: DataPipeline::Handlers::ConvertFile, event: event, context: context)
     end
   end
 end

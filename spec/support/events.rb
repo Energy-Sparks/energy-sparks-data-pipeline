@@ -95,6 +95,26 @@ module DataPipeline
         file_event(filename: 'sheffield/export.ZIP', bucket: 'file-bucket')
       end
 
+      def self.xls_added
+        file_event(filename: 'npower-eon/export.xls', bucket: 'file-bucket')
+      end
+
+      def self.uppercase_xls_added
+        file_event(filename: 'npower-eon/export.XLS', bucket: 'file-bucket')
+      end
+
+      def self.xlsx_added
+        file_event(filename: 'npower-eon/export.xlsx', bucket: 'file-bucket')
+      end
+
+      def self.xlsx_multi_added
+        file_event(filename: 'bryt/multi-sheet.xlsx', bucket: 'file-bucket')
+      end
+
+      def self.uppercase_xlsx_added
+        file_event(filename: 'npower-eon/export.XLSX', bucket: 'file-bucket')
+      end
+
       def self.image_added
         file_event(filename: 'sheffield/image.png', bucket: 'file-bucket')
       end
@@ -102,7 +122,6 @@ module DataPipeline
       def self.missing_file
         file_event(filename: 'missing.txt', bucket: 'email-bucket')
       end
-
     end
   end
 end
