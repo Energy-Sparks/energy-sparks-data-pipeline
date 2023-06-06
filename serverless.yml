@@ -26,6 +26,9 @@ provider:
   profile: serverless
   region: eu-west-2
   stage: ${opt:stage, 'development'}
+  layers:
+    - {Ref: GemlayerLambdaLayer}
+
   environment:
     INBOX_BUCKET: ${self:custom.buckets.inbox_bucket}
     PROCESS_BUCKET: ${self:custom.buckets.process_bucket}
@@ -34,6 +37,8 @@ provider:
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
+    GEM_PATH: /opt/2.7.0
+
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -59,34 +64,18 @@ functions:
     handler: handler.DataPipeline::Handler.unpack_attachments
     events:
       - s3: ${self:provider.environment.INBOX_BUCKET}
-    layers:
-      - {Ref: GemlayerLambdaLayer}
-    environment:
-      GEM_PATH: /opt/2.7.0
   process-file:
     handler: handler.DataPipeline::Handler.process_file
     events:
       - s3: ${self:provider.environment.PROCESS_BUCKET}
-    layers:
-      - {Ref: GemlayerLambdaLayer}
-    environment:
-      GEM_PATH: /opt/2.7.0
   uncompress:
     handler: handler.DataPipeline::Handler.uncompress_file
     events:
       - s3: ${self:provider.environment.COMPRESSED_BUCKET}
-    layers:
-      - {Ref: GemlayerLambdaLayer}
-    environment:
-      GEM_PATH: /opt/2.7.0
   convert:
     handler: handler.DataPipeline::Handler.convert_file
     events:
       - s3: ${self:provider.environment.SPREADSHEET_BUCKET}
-    layers:
-      - {Ref: GemlayerLambdaLayer}
-    environment:
-      GEM_PATH: /opt/2.7.0
 
 resources:
   Resources:
