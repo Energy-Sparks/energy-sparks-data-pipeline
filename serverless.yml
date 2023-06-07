@@ -2,9 +2,9 @@
 #    docs.serverless.com
 
 service: data-pipeline
-
+frameworkVersion: '3'
 useDotenv: true
-unresolvedVariablesNotificationMode: error
+configValidationMode: error
 
 custom:
   currentStage: ${opt:stage, 'development'}
@@ -39,25 +39,29 @@ provider:
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
     GEM_PATH: /opt/2.7.0
 
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:*"
-      Resource:
-        - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
-        - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
+            - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
 
 package:
-  exclude:
-    - .rspec
-    - Gemfile
-    - Gemfile.lock
-    - spec/**
+  patterns:
+    - '!.rspec'
+    - '!Gemfile'
+    - '!Gemfile.lock'
+    - '!spec/**'
+    - '!ruby/**'
+    - '!tmp/**'
 
 functions:
   unpack-attachments:

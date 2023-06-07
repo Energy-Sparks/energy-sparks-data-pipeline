@@ -21,11 +21,13 @@ The buckets we have are as follows and there is a set of these for each of the
 development, test and production environments:
 
 **es-[env]-data-inbox**
+
 Written to by SES email ruleset. Contains MIME formatted files.
 Triggers running the “unpack attachments” function which will take attachments
 and put them in the process bucket.
 
 **es-[env]-data-process**
+
 Contains files from emails that have been unpacked by the previous function.
 Triggers running the "process file" function, which will put csv files
 in the AMR data bucket, zip files in the uncompressed bucket or
@@ -33,24 +35,37 @@ spreadsheets in the spreadsheet bucket. Any unrecognised files are put in the
 unprocessable bucket.
 
 **es-[env]-data-uncompressed**
+
 Contains files that need to be unzipped.
 Triggers the "uncompress file" function, which unzips files and puts them in
 the process bucket. Unregognised files are put in the unprocessable bucket.
 
 **es-[env]-data-spreadsheet**
+
 Contains spreadsheets that need to be converted to csv.
 Triggers the "convert file" function which converts xls and xlsx spreadsheet
 files to csv and puts them in the process bucket. Unregognised files are put in
 the unprocessable bucket.
 
 **es-[env]-data-unprocessable**
+
 Contains files that cannot be processed, e.g. unknown formats, zips that
 couldn’t be parsed or spreadsheets that couldn't be converted to csv.
 
 **es-[env]-data-amr-data**
+
 Contains CSV files ready for processing by the overnight batch job.
 Within this bucket, folders called archive-* are archived versions of processed
 files.
+
+## Development and testing
+
+Run `bundle install` to install the required gems locally.
+
+Run `bundle exec rspec` to run the test suite. The tests stub calls
+to the S3 service to monitor requests made and to fake responses.
+
+Run `bundle exec guard` to run tests automatically as files change.
 
 ## Serverless
 
@@ -71,19 +86,11 @@ project root directory. Note, the region is set manually in the
 serverless.yml file so deploying to different regions would require a
 change to the configuration.
 
-## Development and testing
-
-Run `bundle install` to install the required gems locally.
-
-Run `bundle exec rspec` to run the test suite. The tests stub calls
-to the S3 service to monitor requests made and to fake responses.
-
-Run `bundle exec guard` to run tests automatically as files change.
-
 ## Deployment configuration
 
 Install serverless using homebrew (`brew install serverless`) or using
-[npm](https://serverless.com/framework/docs/getting-started/).
+[npm](https://serverless.com/framework/docs/getting-started/). We are using
+serverless v3 which requires a version of node greater than 10.
 
 Add the serverless AWS credentials to a profile called `serverless` in your
 `~/.aws/credentials` file (these credentials can be found in a document titled
@@ -131,7 +138,14 @@ but will skip building & packaging the gems.
 To deploy to a different stage use the --stage option
 e.g. `sls deploy --stage test`.
 
-## Adding a new school area
+## Monitoring
+
+Logs and usage stats found via the `Monitoring` tab on the individual
+lambda AWS page.
+
+## Other configuration
+
+### Adding a new school area
 
 The email rule for SES is a catch-all and will use the local part of the
 email address to prefix the S3 object key. e.g. a file called
@@ -139,23 +153,20 @@ email address to prefix the S3 object key. e.g. a file called
 `sheffield/import.csv`. Changes will need to be made to the main
 application to process files from previously unseen prefixes.
 
-## Adding a stage
+### Adding a stage
 
 To start receiving emails to a new stage a new SES rule will have to be
 added to move the email to the `es-STAGE-data-pipeline-inbox` bucket.
 
-## File expiry
+### File expiry
 
 File expiry is managed manually through the S3 web interface and will
 need setting up for new buckets. This is done with lifecycle rules, configurable
 via the Management tab for the bucket.
 
-## Monitoring
+## Further reading
 
-Logs and usage stats found via the `Monitoring` tab on the individual
-lambda AWS page.
+### Deployment of gems with native extensions
 
-## Further reading on deployment of gems with native extensions
-
-[Building AWS Ruby Lambdas that Require Gems with Native Extension](https://dev.to/aws-builders/building-aws-ruby-lambdas-that-require-gems-with-native-extension-17h)
-[Deploying ruby gems with native extensions on AWS Lambda & serverless](https://blog.francium.tech/deploying-ruby-gems-with-native-extensions-on-aws-lambda-using-the-serverless-toolkit-9079e34db2ab)
+* [Building AWS Ruby Lambdas that Require Gems with Native Extension](https://dev.to/aws-builders/building-aws-ruby-lambdas-that-require-gems-with-native-extension-17h)
+* [Deploying ruby gems with native extensions on AWS Lambda & serverless](https://blog.francium.tech/deploying-ruby-gems-with-native-extensions-on-aws-lambda-using-the-serverless-toolkit-9079e34db2ab)

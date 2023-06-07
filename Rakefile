@@ -9,7 +9,7 @@ namespace :deploy do
            '-v $PWD:/var/gem_build ' +
            '-w /var/gem_build ' +
            '-u $(id -u):$(id -g) ' +
-           '-e BUNDLE_SILENCE_ROOT_WARNING=1 ' +
+           '-e HOME=/tmp ' +
            'amazon/aws-sam-cli-build-image-ruby2.7 ' +
            'bundle install'
     system 'bundle config unset deployment'
