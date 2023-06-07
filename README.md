@@ -21,11 +21,13 @@ The buckets we have are as follows and there is a set of these for each of the
 development, test and production environments:
 
 **es-[env]-data-inbox**
+
 Written to by SES email ruleset. Contains MIME formatted files.
 Triggers running the “unpack attachments” function which will take attachments
 and put them in the process bucket.
 
 **es-[env]-data-process**
+
 Contains files from emails that have been unpacked by the previous function.
 Triggers running the "process file" function, which will put csv files
 in the AMR data bucket, zip files in the uncompressed bucket or
@@ -33,21 +35,25 @@ spreadsheets in the spreadsheet bucket. Any unrecognised files are put in the
 unprocessable bucket.
 
 **es-[env]-data-uncompressed**
+
 Contains files that need to be unzipped.
 Triggers the "uncompress file" function, which unzips files and puts them in
 the process bucket. Unregognised files are put in the unprocessable bucket.
 
 **es-[env]-data-spreadsheet**
+
 Contains spreadsheets that need to be converted to csv.
 Triggers the "convert file" function which converts xls and xlsx spreadsheet
 files to csv and puts them in the process bucket. Unregognised files are put in
 the unprocessable bucket.
 
 **es-[env]-data-unprocessable**
+
 Contains files that cannot be processed, e.g. unknown formats, zips that
 couldn’t be parsed or spreadsheets that couldn't be converted to csv.
 
 **es-[env]-data-amr-data**
+
 Contains CSV files ready for processing by the overnight batch job.
 Within this bucket, folders called archive-* are archived versions of processed
 files.
