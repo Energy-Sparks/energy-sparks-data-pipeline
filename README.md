@@ -132,7 +132,14 @@ but will skip building & packaging the gems.
 To deploy to a different stage use the --stage option
 e.g. `sls deploy --stage test`.
 
-## Adding a new school area
+## Monitoring
+
+Logs and usage stats found via the `Monitoring` tab on the individual
+lambda AWS page.
+
+## Other configuration
+
+### Adding a new school area
 
 The email rule for SES is a catch-all and will use the local part of the
 email address to prefix the S3 object key. e.g. a file called
@@ -140,23 +147,20 @@ email address to prefix the S3 object key. e.g. a file called
 `sheffield/import.csv`. Changes will need to be made to the main
 application to process files from previously unseen prefixes.
 
-## Adding a stage
+### Adding a stage
 
 To start receiving emails to a new stage a new SES rule will have to be
 added to move the email to the `es-STAGE-data-pipeline-inbox` bucket.
 
-## File expiry
+### File expiry
 
 File expiry is managed manually through the S3 web interface and will
 need setting up for new buckets. This is done with lifecycle rules, configurable
 via the Management tab for the bucket.
 
-## Monitoring
+## Further reading
 
-Logs and usage stats found via the `Monitoring` tab on the individual
-lambda AWS page.
+### Deployment of gems with native extensions
 
-## Further reading on deployment of gems with native extensions
-
-[Building AWS Ruby Lambdas that Require Gems with Native Extension](https://dev.to/aws-builders/building-aws-ruby-lambdas-that-require-gems-with-native-extension-17h)
-[Deploying ruby gems with native extensions on AWS Lambda & serverless](https://blog.francium.tech/deploying-ruby-gems-with-native-extensions-on-aws-lambda-using-the-serverless-toolkit-9079e34db2ab)
+* [Building AWS Ruby Lambdas that Require Gems with Native Extension](https://dev.to/aws-builders/building-aws-ruby-lambdas-that-require-gems-with-native-extension-17h)
+* [Deploying ruby gems with native extensions on AWS Lambda & serverless](https://blog.francium.tech/deploying-ruby-gems-with-native-extensions-on-aws-lambda-using-the-serverless-toolkit-9079e34db2ab)
