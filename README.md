@@ -12,8 +12,8 @@ takes data from the AMR data bucket for importing to EnergySparks.
 
 ## Buckets and functions
 
-There are a series of buckets which the files move through during processing -
-an AWS lambda function is triggered by the addition of a file to a bucket,
+There are a series of buckets which the files move through during processing.
+An AWS lambda function is triggered by the addition of a file to a bucket,
 which then processes the file and moves it onto another bucket which in turn
 triggers more lambdas where required.
 
@@ -38,7 +38,7 @@ Triggers the "uncompress file" function, which unzips files and puts them in
 the process bucket. Unregognised files are put in the unprocessable bucket.
 
 **es-[env]-data-spreadsheet**
-Contains files that need to be unzipped.
+Contains spreadsheets that need to be converted to csv.
 Triggers the "convert file" function which converts xls and xlsx spreadsheet
 files to csv and puts them in the process bucket. Unregognised files are put in
 the unprocessable bucket.
@@ -103,10 +103,9 @@ The functions log some errors in Rollbar. You need to add the following files:
 .env.production
 ```
 
-In each file, add a `ROLLBAR_ACCESS_TOKEN` environment variable with the right
-token. For test and production, use the same token as the equivalent
-environments in the live main application and for development, use the test
-environment token.
+In each file, add a `ROLLBAR_ACCESS_TOKEN` environment variable - for test and
+production, use the same token as the equivalent environments in the live main
+application and for development, use the test environment token.
 
 Make sure you have docker installed (`brew install --cask docker`) or
 [download the Apple Chip version](http://docker.com)
@@ -115,7 +114,7 @@ Make sure you have docker installed (`brew install --cask docker`) or
 
 As we are using ruby gems with native dependencies (i.e. Nokogiri), we use
 Docker to build the Gems in an environment that is the same as AWS Lambda.
-These can then published to a lambda layer which is used by the functions.
+These can then be published to a lambda layer which is used by the functions.
 
 Run `rake deploy:ENVIRONMENT` to build the gems with docker and deploy the
 pipeline to AWS. e.g. `rake deploy:development`.
