@@ -16,12 +16,19 @@ custom:
     amr_data_bucket: es-${self:custom.currentStage}-data-amr-data
     unprocessable_bucket: es-${self:custom.currentStage}-data-unprocessable
 
+layers:
+  gemlayer:
+    path: ruby
+
 provider:
   name: aws
   runtime: ruby2.7
   profile: serverless
   region: eu-west-2
   stage: ${opt:stage, 'development'}
+  layers:
+    - {Ref: GemlayerLambdaLayer}
+
   environment:
     INBOX_BUCKET: ${self:custom.buckets.inbox_bucket}
     PROCESS_BUCKET: ${self:custom.buckets.process_bucket}
@@ -30,6 +37,8 @@ provider:
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
+    GEM_PATH: /opt/2.7.0
+
   iamRoleStatements:
     - Effect: "Allow"
       Action:
