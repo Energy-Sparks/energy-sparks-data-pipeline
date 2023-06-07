@@ -15,6 +15,11 @@ namespace :deploy do
     system 'bundle config unset without'
   end
 
+  task :build do
+    system 'rm -Rf ruby'    
+    build_with_docker
+  end
+
   task :development do
     system 'rm -Rf ruby'
     if build_with_docker
