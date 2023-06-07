@@ -1,7 +1,12 @@
 namespace :deploy do
 
   def build_with_docker
-    system 'docker run --rm -it -v $PWD:/var/gem_build -w /var/gem_build amazon/aws-sam-cli-build-image-ruby2.7 bundle install --deployment --without test development --path=.'
+    system 'docker run --rm -it -v $PWD:/var/gem_build ' +
+           '-w /var/gem_build amazon/aws-sam-cli-build-image-ruby2.7 ' +
+           'bundle install --deployment --without test development --path=.'
+    system 'bundle config unset deployment'
+    system 'bundle config unset path'
+    system 'bundle config unset without'
   end
 
   task :development do

@@ -17,4 +17,5 @@ end
 
 group :development do
   gem 'fasterer'
+  gem 'guard-rspec', require: false
 end
