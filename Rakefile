@@ -8,6 +8,7 @@ namespace :deploy do
     system 'docker run --platform linux/amd64 --rm -it ' +
            '-v $PWD:/var/gem_build ' +
            '-w /var/gem_build ' +
+           '-u $(id -u):$(id -g) ' +
            '-e BUNDLE_SILENCE_ROOT_WARNING=1 ' +
            'amazon/aws-sam-cli-build-image-ruby2.7 ' +
            'bundle install'
@@ -17,7 +18,7 @@ namespace :deploy do
   end
 
   task :build do
-    system 'rm -Rf ruby'    
+    system 'rm -Rf ruby'
     build_with_docker
   end
 
