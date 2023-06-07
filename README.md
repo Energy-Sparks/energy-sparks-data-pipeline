@@ -107,8 +107,8 @@ In each file, add a `ROLLBAR_ACCESS_TOKEN` environment variable - for test and
 production, use the same token as the equivalent environments in the live main
 application and for development, use the test environment token.
 
-Make sure you have docker installed (`brew install --cask docker`) or
-[download the Apple Chip version](http://docker.com)
+Make sure you have docker installed (for macOS `brew install --cask docker` or
+[download the Apple Chip version](http://docker.com)).
 
 ## Deployment
 
@@ -117,6 +117,10 @@ Docker to build the Gems in an environment that is the same as AWS Lambda.
 These can then be published to a lambda layer which is used by the functions.
 
 To build the gems with docker but without deploying, run `rake deploy:build`.
+
+If there is a permissions error when running docker, you may have to
+[add your user to the docker group](https://linuxhandbook.com/docker-permission-denied/):
+`sudo usermod -aG docker $USER`.
 
 Run `rake deploy:ENVIRONMENT` to build the gems with docker and deploy the
 pipeline to AWS. e.g. `rake deploy:development`.
