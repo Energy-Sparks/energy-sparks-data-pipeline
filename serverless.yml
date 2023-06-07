@@ -39,18 +39,20 @@ provider:
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
     GEM_PATH: /opt/2.7.0
 
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:*"
-      Resource:
-        - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
-        - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
-        - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
+            - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
 
 package:
   patterns:
