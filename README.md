@@ -141,7 +141,8 @@ added to move the email to the `es-STAGE-data-pipeline-inbox` bucket.
 ## File expiry
 
 File expiry is managed manually through the S3 web interface and will
-need setting up for new buckets.
+need setting up for new buckets. This is done with lifecycle rules, configurable
+via the Management tab for the bucket.
 
 ## Monitoring
 
