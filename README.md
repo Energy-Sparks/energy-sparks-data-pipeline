@@ -116,6 +116,8 @@ As we are using ruby gems with native dependencies (i.e. Nokogiri), we use
 Docker to build the Gems in an environment that is the same as AWS Lambda.
 These can then be published to a lambda layer which is used by the functions.
 
+To build the gems with docker but without deploying, run `rake deploy:build`.
+
 Run `rake deploy:ENVIRONMENT` to build the gems with docker and deploy the
 pipeline to AWS. e.g. `rake deploy:development`.
 
