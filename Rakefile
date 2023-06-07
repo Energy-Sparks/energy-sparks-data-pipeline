@@ -3,6 +3,7 @@ namespace :deploy do
   def build_with_docker
     system 'bundle config set --local deployment "true"' # Set bundler configuration to deployment mode
     system 'bundle config set --local path "."'
+    system 'bundle config unset with'
     system 'bundle config set without "test development"'
     system 'docker run --platform linux/amd64 --rm -it ' +
            '-v $PWD:/var/gem_build ' +
