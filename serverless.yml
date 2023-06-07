@@ -2,9 +2,9 @@
 #    docs.serverless.com
 
 service: data-pipeline
-
+frameworkVersion: '3'
 useDotenv: true
-unresolvedVariablesNotificationMode: error
+configValidationMode: error
 
 custom:
   currentStage: ${opt:stage, 'development'}

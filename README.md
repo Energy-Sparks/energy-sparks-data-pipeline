@@ -52,6 +52,15 @@ Contains CSV files ready for processing by the overnight batch job.
 Within this bucket, folders called archive-* are archived versions of processed
 files.
 
+## Development and testing
+
+Run `bundle install` to install the required gems locally.
+
+Run `bundle exec rspec` to run the test suite. The tests stub calls
+to the S3 service to monitor requests made and to fake responses.
+
+Run `bundle exec guard` to run tests automatically as files change.
+
 ## Serverless
 
 The setup of the buckets, lambdas and associated permissions is managed
@@ -71,19 +80,11 @@ project root directory. Note, the region is set manually in the
 serverless.yml file so deploying to different regions would require a
 change to the configuration.
 
-## Development and testing
-
-Run `bundle install` to install the required gems locally.
-
-Run `bundle exec rspec` to run the test suite. The tests stub calls
-to the S3 service to monitor requests made and to fake responses.
-
-Run `bundle exec guard` to run tests automatically as files change.
-
 ## Deployment configuration
 
 Install serverless using homebrew (`brew install serverless`) or using
-[npm](https://serverless.com/framework/docs/getting-started/).
+[npm](https://serverless.com/framework/docs/getting-started/). We are using
+serverless v3 which requires a version of node greater than 10.
 
 Add the serverless AWS credentials to a profile called `serverless` in your
 `~/.aws/credentials` file (these credentials can be found in a document titled
