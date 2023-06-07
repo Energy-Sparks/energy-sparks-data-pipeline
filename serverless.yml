@@ -53,11 +53,13 @@ provider:
         - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
 
 package:
-  exclude:
-    - .rspec
-    - Gemfile
-    - Gemfile.lock
-    - spec/**
+  patterns:
+    - '!.rspec'
+    - '!Gemfile'
+    - '!Gemfile.lock'
+    - '!spec/**'
+    - '!ruby/**'
+    - '!tmp/**'
 
 functions:
   unpack-attachments:
