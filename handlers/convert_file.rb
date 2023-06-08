@@ -4,7 +4,7 @@ require 'roo-xls'
 
 module DataPipeline
   module Handlers
-    class ConvertFile
+    class ConvertFile < ConversionBase
       def initialize(client:, logger:, environment: {})
         @client = client
         @environment = environment
@@ -26,30 +26,14 @@ module DataPipeline
           spreadsheet = Roo::Spreadsheet.open(tmp)
 
           content = spreadsheet.sheet(0).to_csv
+
+          @logger.info("Spreadsheet conversion successs, moving: #{key} to: #{@environment['PROCESS_BUCKET']}")
           response = move_to_process_bucket("#{prefix}/#{filename}#{extname}.csv", content)
         rescue StandardError => e
+          @logger.info("Spreadsheet conversion failed, moving: #{key} to: #{@environment['UNPROCESSABLE_BUCKET']} error: #{e.message}")
           response = move_to_unprocessable_bucket(key, file)
         end
         { statusCode: 200, body: JSON.generate(response: response) }
-      end
-
-    private
-
-      def move_to_process_bucket(key, content)
-        @client.put_object(
-          bucket: @environment['PROCESS_BUCKET'],
-          key: key,
-          body: content,
-        )
-      end
-
-      def move_to_unprocessable_bucket(key, file)
-        @client.put_object(
-          bucket: @environment['UNPROCESSABLE_BUCKET'],
-          key: key,
-          body: file.body,
-          content_type: file.content_type
-        )
       end
     end
   end

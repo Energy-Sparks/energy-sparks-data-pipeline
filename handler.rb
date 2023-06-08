@@ -1,3 +1,4 @@
+require './handlers/conversion_base'
 require './handlers/process_file'
 require './handlers/uncompress_file'
 require './handlers/unpack_attachments'
