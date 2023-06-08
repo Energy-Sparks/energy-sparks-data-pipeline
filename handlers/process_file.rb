@@ -2,19 +2,14 @@ require 'aws-sdk-s3'
 
 module DataPipeline
   module Handlers
-    class ProcessFile
-      def initialize(client:, logger:, environment: {})
-        @client = client
-        @environment = environment
-        @logger = logger
-      end
+    class ProcessFile < HandlerBase
 
       def process(key:, bucket:)
         file = @client.get_object(bucket: bucket, key: key)
 
         next_bucket = next_bucket_finder(key)
 
-        if next_bucket == @environment['AMR_DATA_BUCKET']
+        if next_bucket == :amr_data
           file_body = StringIO.new
 
           file.body.each_line do |line|
@@ -29,17 +24,12 @@ module DataPipeline
           file_body = file.body
         end
 
-        response = @client.put_object(
-          bucket: next_bucket,
-          key: key,
-          content_type: file.content_type,
-          body: file_body
-        )
+        response = add_to_bucket(next_bucket, key: key, body: file_body, content_type: file.content_type)
 
-        @logger.info("Moved: #{key} to: #{next_bucket}")
-
-        { statusCode: 200, body: JSON.generate(response: response) }
+        respond 200, response: response
       end
+
+    private
 
       def remove_utf8_invalids(line)
         line.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
@@ -51,10 +41,10 @@ module DataPipeline
 
       def next_bucket_finder(key)
         case key
-        when /csv\Z/i then @environment['AMR_DATA_BUCKET']
-        when /zip\Z/i then @environment['COMPRESSED_BUCKET']
-        when /xlsx?\Z/i then @environment['SPREADSHEET_BUCKET']
-        else @environment['UNPROCESSABLE_BUCKET']
+        when /csv\Z/i then :amr_data
+        when /zip\Z/i then :compressed
+        when /xlsx?\Z/i then :spreadsheet
+        else :unprocessable
         end
       end
     end

@@ -5,18 +5,8 @@ require 'rollbar'
 
 module DataPipeline
   module Handlers
-    class UnpackAttachments
+    class UnpackAttachments < HandlerBase
       IMSERV_LINK_REGEX = %r{(https\://datavision.imserv.com/imgserver/InternalImage.aspx\?[a-zA-Z0-9&%=]+)}.freeze
-
-      def initialize(client:, logger:, environment: {})
-        @client = client
-        @environment = environment
-        @logger = logger
-        Rollbar.configure do |config|
-          config.access_token = @environment["ROLLBAR_ACCESS_TOKEN"]
-          config.environment = "data-pipeline"
-        end
-      end
 
       def process(key:, bucket:)
         email_file = @client.get_object(bucket: bucket, key: key)
@@ -29,19 +19,17 @@ module DataPipeline
 
         @logger.info("Prefix: #{prefix}")
 
-        if email.attachments.any?
-          responses = store_attachments(prefix, email)
+        responses = if email.attachments.any?
+          store_attachments(prefix, email)
         else
-          responses = store_downloads(prefix, email)
+          store_downloads(prefix, email)
         end
-        { statusCode: 200, body: JSON.generate(responses: responses) }
+        respond 200, responses: responses
       end
 
       def store_attachments(prefix, email)
         responses = email.attachments.map do |attachment|
-          @logger.info("Moving: #{attachment.filename} to: #{@environment['PROCESS_BUCKET']}")
-          @client.put_object(
-            bucket: @environment['PROCESS_BUCKET'],
+          add_to_bucket(:process,
             key: "#{prefix}/#{attachment.filename}",
             content_type: attachment.mime_type,
             body: attachment.decoded
@@ -55,9 +43,7 @@ module DataPipeline
         links = extract_download_links(email, prefix)
         results = download_csv_reports(links, prefix)
         responses = results.map do |download|
-          @logger.info("Storing: #{download.filename} to: #{@environment['PROCESS_BUCKET']}")
-          @client.put_object(
-            bucket: @environment['PROCESS_BUCKET'],
+          add_to_bucket(:process,
             key: "#{prefix}/#{download.filename}",
             content_type: download.mime_type,
             body: download.body

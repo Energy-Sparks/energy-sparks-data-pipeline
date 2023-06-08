@@ -1,4 +1,4 @@
-require './handlers/conversion_base'
+require './handlers/handler_base'
 require './handlers/process_file'
 require './handlers/uncompress_file'
 require './handlers/unpack_attachments'
@@ -10,10 +10,6 @@ module DataPipeline
       s3_record = event['Records'].first['s3']
       file_key = CGI::unescape s3_record['object']['key']
       bucket_name = s3_record['bucket']['name']
-
-      logger.info("Running handler: #{handler.name} with file: #{file_key} from bucket: #{bucket_name}")
-      logger.debug("Event: #{event}")
-      logger.debug("Context: #{context}")
 
       handler.new(client: client, logger: logger, environment: environment).process(key: file_key, bucket: bucket_name)
     end
