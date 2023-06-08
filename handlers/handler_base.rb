@@ -13,8 +13,9 @@ module DataPipeline
 
     private
 
-      def add_to_bucket(bucket, key:, body: nil, file: nil, content_type: nil)
-        params = { bucket: bucket_name(bucket), key: key }
+      def add_to_bucket(bucket_sym, key:, body: nil, file: nil, content_type: nil)
+        bucket = bucket_name(bucket_sym)
+        params = { bucket: bucket, key: key }
 
         begin
           if file
