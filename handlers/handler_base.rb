@@ -11,25 +11,30 @@ module DataPipeline
         end
       end
 
-      def bucket_name(bucket_sym)
-        @environment["#{bucket_sym.to_s.upcase}_BUCKET"]
-      end
-
     private
 
       def add_to_bucket(bucket, key:, body: nil, file: nil, content_type: nil)
         params = { key: key, bucket: bucket_name(bucket) }
 
-        if file
-          file.body.rewind # ensure stream is rewound
-          params.merge!({ body: file.body, content_type: file.content_type })
-        elsif body
-          params.merge!({ body: body, content_type: content_type })
-        else
-          raise ArgumentError.new, "Either file or body must be provided"
+        begin
+          if file
+            file.body.rewind # ensure stream is rewound
+            params.merge!({ body: file.body, content_type: file.content_type })
+          elsif body
+            params.merge!({ body: body, content_type: content_type })
+          else
+            raise ArgumentError.new, "Either file or body must be provided"
+          end
+          @logger.info("Moving: #{key} to: #{bucket}")
+          @client.put_object(params.compact)
+        rescue => e
+          @logger.info("Error adding #{key} to: #{bucket}, error: #{e.message}")
+          Rollbar.error(e, bucket: bucket, key: key)
         end
-        @logger.info("Moving: #{key} to: #{bucket}")
-        @client.put_object(params.compact)
+      end
+
+      def bucket_name(bucket_sym)
+        @environment["#{bucket_sym.to_s.upcase}_BUCKET"]
       end
 
       def respond(status_code, content)
