@@ -42,5 +42,4 @@ guard :rspec, cmd: "bundle exec rspec" do
 
   # Watch handlers
   watch(%r{^(handlers/.+)\.rb$})  { |m| "spec/#{m[1]}_spec.rb" }
-
 end

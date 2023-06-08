@@ -1,12 +1,15 @@
 module DataPipeline
   module Handlers
     class HandlerBase
+
+      attr_reader :logger, :client, :environment
+
       def initialize(client:, logger:, environment: {})
         @client = client
         @environment = environment
         @logger = logger
         Rollbar.configure do |config|
-          config.access_token = @environment["ROLLBAR_ACCESS_TOKEN"]
+          config.access_token = environment["ROLLBAR_ACCESS_TOKEN"]
           config.environment = "data-pipeline"
         end
       end
@@ -26,16 +29,16 @@ module DataPipeline
           else
             raise ArgumentError.new, "Either file or body must be provided"
           end
-          @logger.info("Moving: #{key} to: #{bucket}")
-          @client.put_object(params.compact)
+          logger.info("Moving: #{key} to: #{bucket}")
+          client.put_object(params.compact)
         rescue => e
-          @logger.info("Error adding #{key} to: #{bucket}, error: #{e.message}")
+          logger.info("Error adding #{key} to: #{bucket}, error: #{e.message}")
           Rollbar.error(e, bucket: bucket, key: key)
         end
       end
 
       def bucket_name(bucket_sym)
-        @environment["#{bucket_sym.to_s.upcase}_BUCKET"]
+        environment["#{bucket_sym.to_s.upcase}_BUCKET"]
       end
 
       def respond(status_code, content)

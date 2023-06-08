@@ -1,11 +1,9 @@
-require 'aws-sdk-s3'
-
 module DataPipeline
   module Handlers
     class ProcessFile < HandlerBase
 
       def process(key:, bucket:)
-        file = @client.get_object(bucket: bucket, key: key)
+        file = client.get_object(bucket: bucket, key: key)
 
         next_bucket = next_bucket_finder(key)
 

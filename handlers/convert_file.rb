@@ -1,4 +1,3 @@
-require 'aws-sdk-s3'
 require 'roo'
 require 'roo-xls'
 
@@ -7,7 +6,7 @@ module DataPipeline
     class ConvertFile < HandlerBase
 
       def process(key:, bucket:)
-        file = @client.get_object(bucket: bucket, key: key)
+        file = client.get_object(bucket: bucket, key: key)
 
         response = nil
         begin
@@ -17,10 +16,10 @@ module DataPipeline
           spreadsheet = Roo::Spreadsheet.open(tmp)
           content = spreadsheet.sheet(0).to_csv
 
-          @logger.info("Spreadsheet conversion successs")
+          logger.info("Spreadsheet conversion successs")
           response =  add_to_bucket :process, key: "#{key}.csv", body: content
         rescue StandardError => e
-          @logger.info("Spreadsheet conversion failed, error: #{e.message}")
+          logger.info("Spreadsheet conversion failed, error: #{e.message}")
           Rollbar.error(e, bucket: bucket, key: key)
 
           response = add_to_bucket :unprocessable, key: key, file: file
