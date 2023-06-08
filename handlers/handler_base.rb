@@ -29,7 +29,7 @@ module DataPipeline
           else
             raise ArgumentError.new, "Either file or body must be provided"
           end
-          logger.info("Moving: #{key} to: #{bucket}")
+          logger.info("Adding: #{key} to: #{bucket}")
           client.put_object(params.compact)
         rescue => e
           logger.info("Error adding #{key} to: #{bucket}, error: #{e.message}")
