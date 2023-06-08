@@ -14,7 +14,7 @@ module DataPipeline
     private
 
       def add_to_bucket(bucket, key:, body: nil, file: nil, content_type: nil)
-        params = { key: key, bucket: bucket_name(bucket) }
+        params = { bucket: bucket_name(bucket), key: key }
 
         begin
           if file
