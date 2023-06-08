@@ -13,10 +13,13 @@ module DataPipeline
       end
 
       def move_to_unprocessable_bucket(key, file)
+        file.body.rewind
+
         @client.put_object(
           bucket: @environment['UNPROCESSABLE_BUCKET'],
           key: key,
-          body: file.body
+          body: file.body,
+          content_type: file.content_type
         )
       end
     end

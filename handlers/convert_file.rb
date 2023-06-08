@@ -24,7 +24,6 @@ module DataPipeline
           tmp.binmode
           tmp.write file[:body].read
           spreadsheet = Roo::Spreadsheet.open(tmp)
-
           content = spreadsheet.sheet(0).to_csv
 
           @logger.info("Spreadsheet conversion successs, moving: #{key} to: #{@environment['PROCESS_BUCKET']}")

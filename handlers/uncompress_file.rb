@@ -19,7 +19,7 @@ module DataPipeline
           Zip::File.open_buffer(file.body) do |zip_file|
             zip_file.each do |entry|
               content = entry.get_input_stream.read
-              @logger.info("Uncompression successs,failed moving: #{key} to: #{@environment['PROCESS_BUCKET']}")
+              @logger.info("Uncompression successs, moving: #{key} to: #{@environment['PROCESS_BUCKET']}")
               upload_responses << move_to_process_bucket("#{prefix}/#{entry.name}", content)
             end
           end
