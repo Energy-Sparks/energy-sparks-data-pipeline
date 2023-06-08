@@ -1,7 +1,6 @@
 module DataPipeline
   module Handlers
     class HandlerBase
-
       attr_reader :logger, :client, :environment
 
       def initialize(client:, logger:, environment: {})
