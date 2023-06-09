@@ -1,7 +1,10 @@
+require './handlers/handler_base'
 require './handlers/process_file'
 require './handlers/uncompress_file'
 require './handlers/unpack_attachments'
 require './handlers/convert_file'
+require 'aws-sdk-s3'
+require 'rollbar'
 
 module DataPipeline
   class Handler

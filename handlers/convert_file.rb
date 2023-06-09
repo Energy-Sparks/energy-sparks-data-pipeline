@@ -1,55 +1,30 @@
-require 'aws-sdk-s3'
 require 'roo'
 require 'roo-xls'
 
 module DataPipeline
   module Handlers
-    class ConvertFile
-      def initialize(client:, logger:, environment: {})
-        @client = client
-        @environment = environment
-        @logger = logger
-      end
+    class ConvertFile < HandlerBase
 
       def process(key:, bucket:)
-        file = @client.get_object(bucket: bucket, key: key)
-        prefix = key.split('/').first
+        file = client.get_object(bucket: bucket, key: key)
 
         response = nil
         begin
-          filename  = File.basename(key,".*")
-          extname  = File.extname(key)
-
-          tmp = Tempfile.new([filename,extname])
+          tmp = Tempfile.new([key,File.extname(key)])
           tmp.binmode
           tmp.write file[:body].read
           spreadsheet = Roo::Spreadsheet.open(tmp)
-
           content = spreadsheet.sheet(0).to_csv
-          response = move_to_process_bucket("#{prefix}/#{filename}#{extname}.csv", content)
-        rescue StandardError => e
-          response = move_to_unprocessable_bucket(key, file)
+
+          logger.info("Spreadsheet conversion successs")
+          response =  add_to_bucket :process, key: "#{key}.csv", body: content
+        rescue => e
+          logger.error("Spreadsheet conversion failed, error: #{e.message}")
+          Rollbar.error(e, bucket: bucket, key: key)
+
+          response = add_to_bucket :unprocessable, key: key, file: file
         end
-        { statusCode: 200, body: JSON.generate(response: response) }
-      end
-
-    private
-
-      def move_to_process_bucket(key, content)
-        @client.put_object(
-          bucket: @environment['PROCESS_BUCKET'],
-          key: key,
-          body: content,
-        )
-      end
-
-      def move_to_unprocessable_bucket(key, file)
-        @client.put_object(
-          bucket: @environment['UNPROCESSABLE_BUCKET'],
-          key: key,
-          body: file.body,
-          content_type: file.content_type
-        )
+        respond 200, responses: response
       end
     end
   end

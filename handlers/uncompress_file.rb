@@ -1,52 +1,28 @@
-require 'aws-sdk-s3'
 require 'zip'
 
 module DataPipeline
   module Handlers
-    class UncompressFile
-      def initialize(client:, logger:, environment: {})
-        @client = client
-        @environment = environment
-        @logger = logger
-      end
-
+    class UncompressFile < HandlerBase
       def process(key:, bucket:)
-        file = @client.get_object(bucket: bucket, key: key)
+        file = client.get_object(bucket: bucket, key: key)
         prefix = key.split('/').first
 
-        upload_responses = []
+        responses = []
         begin
           Zip::File.open_buffer(file.body) do |zip_file|
             zip_file.each do |entry|
               content = entry.get_input_stream.read
-              @logger.info("Uncompression successs moving: #{key} to: #{@environment['PROCESS_BUCKET']}")
-              upload_responses << move_to_process_bucket("#{prefix}/#{entry.name}", content)
+              logger.info("Uncompression successs")
+              responses << add_to_bucket(:process, key: "#{prefix}/#{entry.name}", body: content)
             end
           end
         rescue Zip::Error => e
-          @logger.info("Uncompression failed moving: #{key} to: #{@environment['UNPROCESSABLE_BUCKET']} error: #{e.message}")
-          upload_responses << move_to_unprocessable_bucket(key, file)
+          logger.error("Uncompression failed, error: #{e.message}")
+          Rollbar.error(e, bucket: bucket, key: key)
+
+          responses << add_to_bucket(:unprocessable, key: key, file: file)
         end
-        { statusCode: 200, body: JSON.generate(responses: upload_responses) }
-      end
-
-    private
-
-      def move_to_process_bucket(key, content)
-        @client.put_object(
-          bucket: @environment['PROCESS_BUCKET'],
-          key: key,
-          body: content,
-        )
-      end
-
-      def move_to_unprocessable_bucket(key, file)
-        @client.put_object(
-          bucket: @environment['UNPROCESSABLE_BUCKET'],
-          key: key,
-          body: file.body,
-          content_type: file.content_type
-        )
+        respond 200, responses: responses
       end
     end
   end
