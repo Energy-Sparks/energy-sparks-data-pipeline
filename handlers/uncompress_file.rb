@@ -17,7 +17,7 @@ module DataPipeline
             end
           end
         rescue Zip::Error => e
-          logger.info("Uncompression failed, error: #{e.message}")
+          logger.error("Uncompression failed, error: #{e.message}")
           Rollbar.error(e, bucket: bucket, key: key)
 
           responses << add_to_bucket(:unprocessable, key: key, file: file)

@@ -19,7 +19,7 @@ module DataPipeline
           logger.info("Spreadsheet conversion successs")
           response =  add_to_bucket :process, key: "#{key}.csv", body: content
         rescue => e
-          logger.info("Spreadsheet conversion failed, error: #{e.message}")
+          logger.error("Spreadsheet conversion failed, error: #{e.message}")
           Rollbar.error(e, bucket: bucket, key: key)
 
           response = add_to_bucket :unprocessable, key: key, file: file
