@@ -14,7 +14,6 @@ module DataPipeline
         logger.info("Receipt address: #{sent_to}")
 
         prefix = sent_to.to_s.split('@').first
-
         logger.info("Prefix: #{prefix}")
 
         responses = if email.attachments.any?

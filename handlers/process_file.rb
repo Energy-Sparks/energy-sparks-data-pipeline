@@ -21,7 +21,6 @@ module DataPipeline
         else
           file_body = file.body
         end
-
         response = add_to_bucket(next_bucket, key: key, body: file_body, content_type: file.content_type)
 
         respond 200, response: response

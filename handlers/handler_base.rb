@@ -21,17 +21,17 @@ module DataPipeline
 
         begin
           if file
-            file.body.rewind # ensure stream is rewound
-            params.merge!({ body: file.body, content_type: file.content_type })
+            file.body.rewind # ensure stream is rewound before reading again
+            params.merge!(body: file.body, content_type: file.content_type)
           elsif body
-            params.merge!({ body: body, content_type: content_type })
+            params.merge!(body: body, content_type: content_type)
           else
             raise ArgumentError.new, "Either file or body must be provided"
           end
           logger.info("Adding: #{key} to: #{bucket}")
           client.put_object(params.compact)
         rescue => e
-          logger.info("Error adding #{key} to: #{bucket}, error: #{e.message}")
+          logger.error("Error adding #{key} to: #{bucket}, error: #{e.message}")
           Rollbar.error(e, bucket: bucket, key: key)
         end
       end
