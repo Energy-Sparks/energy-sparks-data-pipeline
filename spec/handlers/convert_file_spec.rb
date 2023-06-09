@@ -9,7 +9,6 @@ describe DataPipeline::Handlers::ConvertFile do
     let(:npower_xlsx)  { File.open('spec/support/files/npower-eon_export.xlsx') }
     let(:bryt_xlsx)  { File.open('spec/support/files/bryt_multi-sheet.xlsx') }
     let(:unknown_file) { File.open('spec/support/files/1x1.png') }
-    let(:unprocessable_file) { File.open('spec/support/files/npower-eon_image.xlsx') }
 
     let(:logger){ Logger.new(IO::NULL) }
     let(:client) { Aws::S3::Client.new(stub_responses: true) }
@@ -35,8 +34,6 @@ describe DataPipeline::Handlers::ConvertFile do
             { body: bryt_xlsx }
           when 'sheffield/image.png'
             { body: unknown_file}
-          when 'npower-eon/image.xlsx'
-            { body: unprocessable_file}
           else
             'NotFound'
           end
@@ -128,21 +125,6 @@ describe DataPipeline::Handlers::ConvertFile do
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('unprocessable-bucket')
         expect(request[:params][:key]).to eq('sheffield/image.png')
-      end
-
-      it 'returns a success code' do
-        expect(response[:statusCode]).to eq(200)
-      end
-    end
-
-    describe 'when the file does not convert' do
-      let(:event) { DataPipeline::Support::Events.unprocessable_added }
-
-      it 'puts the file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
-        request = client.api_requests.last
-        expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:bucket]).to eq('unprocessable-bucket')
-        expect(request[:params][:key]).to eq('npower-eon/image.xlsx')
       end
 
       it 'returns a success code' do

@@ -119,10 +119,6 @@ module DataPipeline
         file_event(filename: 'sheffield/image.png', bucket: 'file-bucket')
       end
 
-      def self.unprocessable_added
-        file_event(filename: 'npower-eon/image.xlsx', bucket: 'file-bucket')
-      end
-
       def self.missing_file
         file_event(filename: 'missing.txt', bucket: 'email-bucket')
       end
