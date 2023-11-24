@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/Energy-Sparks/roo.git
+  revision: 058a8e3d1c711c04c59a686805bbe1962d2b2ed1
+  branch: bug-fix-branch
+  specs:
+    roo (2.10.0)
+      nokogiri (~> 1)
+      rubyzip (>= 1.3.0, < 3.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -87,9 +96,6 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rollbar (3.3.0)
-    roo (2.10.0)
-      nokogiri (~> 1)
-      rubyzip (>= 1.3.0, < 3.0.0)
     roo-xls (1.2.0)
       nokogiri
       roo (>= 2.0.0, < 3)
@@ -129,7 +135,7 @@ DEPENDENCIES
   guard-rspec
   mail
   rollbar
-  roo
+  roo!
   roo-xls
   rspec
   rubyzip
