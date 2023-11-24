@@ -7,7 +7,8 @@ gem 'mail'
 gem 'rubyzip'
 gem 'faraday'
 gem 'rollbar'
-gem 'roo'
+# Switch to custom branch that incorporates some necessary bug fixes
+gem 'roo', git: 'https://github.com/Energy-Sparks/roo.git', branch: 'bug-fix-branch'
 gem 'roo-xls'
 
 group :test do
