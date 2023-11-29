@@ -38,6 +38,7 @@ provider:
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
     GEM_PATH: /opt/2.7.0
+    BUNDLE_PATH: /opt
 
   iam:
     role:
@@ -56,12 +57,11 @@ provider:
 
 package:
   patterns:
-    - '!.rspec'
-    - '!Gemfile'
-    - '!Gemfile.lock'
-    - '!spec/**'
-    - '!ruby/**'
-    - '!tmp/**'
+    - '!**'
+    - 'handler.rb'
+    - 'handlers/**'
+    - 'Gemfile'
+    - 'Gemfile.lock'
 
 functions:
   unpack-attachments:

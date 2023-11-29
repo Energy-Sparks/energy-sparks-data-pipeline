@@ -1,3 +1,6 @@
+require "bundler"
+Bundler.setup(:default)
+
 require './handlers/handler_base'
 require './handlers/process_file'
 require './handlers/uncompress_file'
