@@ -15,12 +15,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+    - run: npm install -g serverless
     - run: npm ci
-    - name: Install Plugin and Deploy
-      uses: serverless/github-action@v3.2
-      with:
-        args: -c "serverless plugin install --name serverless-ruby-layer && serverless deploy"
-        entrypoint: /bin/sh
+    - run: sls deploy
       env:
         ROLLBAR_ACCESS_TOKEN: token
         # SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
