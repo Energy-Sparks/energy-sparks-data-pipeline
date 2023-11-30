@@ -23,8 +23,8 @@ custom:
 
 provider:
   name: aws
-  runtime: ruby2.7
-  profile: serverless
+  runtime: ruby3.2
+  # profile: serverless
   region: eu-west-2
   stage: ${opt:stage, 'development'}
   environment:
@@ -35,6 +35,7 @@ provider:
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
+    # this allows bundler to pick up gems in the ruby layer given that it appears as /opt/ruby/3.2.0
     BUNDLE_PATH: /opt
   iam:
     role:
