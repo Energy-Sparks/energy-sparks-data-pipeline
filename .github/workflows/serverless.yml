@@ -1,5 +1,7 @@
 name: Deploy to development
-on: [workflow_dispatch]
+on:
+  pull_request:
+    branches: [ "main" ]
 jobs:
   deploy:
     name: deploy
