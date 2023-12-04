@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 require './handler'
 
 describe DataPipeline::Handlers::ProcessFile do
-
   describe '#process' do
-
     let(:sheffield_csv)       { File.open('spec/support/files/sheffield_export.csv') }
     let(:cr_csv)              { File.open('spec/support/files/cr.csv') }
     let(:cr_empty_lines_csv)  { File.open('spec/support/files/cr_empty_lines.csv') }
     let(:highlands_csv)       { File.open('spec/support/files/highlands.csv') }
-    let(:highlands_invalid_character_csv)       { File.open('spec/support/files/highlands-invalid-character.csv', "r:UTF-8") }
+    let(:highlands_invalid_character_csv) do
+      File.open('spec/support/files/highlands-invalid-character.csv', 'r:UTF-8')
+    end
     let(:sheffield_gas_csv)   { File.open('spec/support/files/sheffield_export.csv') }
     let(:sheffield_zip)       { File.open('spec/support/files/sheffield_export.zip') }
     let(:npower_xls)          { File.open('spec/support/files/npower-eon_export.xls') }
@@ -18,21 +20,23 @@ describe DataPipeline::Handlers::ProcessFile do
     let(:unknown_file)        { File.open('spec/support/files/1x1.png') }
     let(:logger) { Logger.new(IO::NULL) }
     let(:client) { Aws::S3::Client.new(stub_responses: true) }
-    let(:environment) {
+    let(:environment) do
       {
         'AMR_DATA_BUCKET' => 'data-bucket',
         'COMPRESSED_BUCKET' => 'compressed-bucket',
         'UNPROCESSABLE_BUCKET' => 'unprocessable-bucket',
         'SPREADSHEET_BUCKET' => 'spreadsheet-bucket'
       }
-    }
+    end
 
-    let(:handler){ DataPipeline::Handlers::ProcessFile }
-    let(:response){ DataPipeline::Handler.run(handler: handler, event: event, client: client, environment: environment, logger: logger) }
+    let(:handler) { described_class }
+    let(:response) do
+      DataPipeline::Handler.run(handler:, event:, client:, environment:, logger:)
+    end
 
     before do
       client.stub_responses(
-        :get_object, ->(context) {
+        :get_object, lambda { |context|
           case context.params[:key]
           when 'sheffield/export.csv', 'sheffield/export.CSV'
             { body: sheffield_csv }
@@ -48,7 +52,7 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: sheffield_zip }
           when 'sheffield/image.png'
             { body: unknown_file }
-          when  'sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
+          when 'sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
             { body: sheffield_gas_csv }
           when 'npower-eon/export.xls', 'npower-eon/export.XLS'
             { body: npower_xls }
@@ -68,7 +72,8 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv')
+        expect(request[:params][:key]).to \
+          eq('sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
 
@@ -107,7 +112,7 @@ describe DataPipeline::Handlers::ProcessFile do
 
         it 'normalises them' do
           request = client.api_requests.last
-          expect(request[:params][:body].readlines.all?{|line| line.match?(/[^\r]\n\Z/)}).to eq(true)
+          expect(request[:params][:body].readlines.all? { |line| line.match?(/[^\r]\n\Z/) }).to be(true)
         end
       end
 
@@ -116,7 +121,7 @@ describe DataPipeline::Handlers::ProcessFile do
 
         it 'removes them' do
           request = client.api_requests.last
-          expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
+          expect(request[:params][:body].readlines.any? { |line| line.match?(/^$/) }).to be(false)
         end
       end
 
@@ -125,9 +130,9 @@ describe DataPipeline::Handlers::ProcessFile do
 
         it 'removes them' do
           request = client.api_requests.last
-          expect(request[:params][:body].readlines.any?{|line| line.match?(/\u0000/)}).to eq(false)
+          expect(request[:params][:body].readlines.any? { |line| line.match?(/\u0000/) }).to be(false)
           request[:params][:body].rewind
-          expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
+          expect(request[:params][:body].readlines.any? { |line| line.match?(/^$/) }).to be(false)
         end
       end
 
@@ -136,9 +141,9 @@ describe DataPipeline::Handlers::ProcessFile do
 
         it 'removes them' do
           request = client.api_requests.last
-          expect(request[:params][:body].readlines.any?{|line| line.match?(/\u0000/)}).to eq(false)
+          expect(request[:params][:body].readlines.any? { |line| line.match?(/\u0000/) }).to be(false)
           request[:params][:body].rewind
-          expect(request[:params][:body].readlines.any?{|line| line.match?(/^$/)}).to eq(false)
+          expect(request[:params][:body].readlines.any? { |line| line.match?(/^$/) }).to be(false)
         end
       end
     end
@@ -159,7 +164,7 @@ describe DataPipeline::Handlers::ProcessFile do
     end
 
     describe 'when the file is a .zip' do
-      let(:event){ DataPipeline::Support::Events.zip_added }
+      let(:event) { DataPipeline::Support::Events.zip_added }
 
       it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -221,7 +226,7 @@ describe DataPipeline::Handlers::ProcessFile do
     describe 'when the file is an .XLSX' do
       let(:event) { DataPipeline::Support::Events.uppercase_xlsx_added }
 
-      it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
+      it 'puts the attachment file in the SPREADSHEET_BUCKET using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to eq('npower-eon/export.XLSX')
@@ -236,7 +241,7 @@ describe DataPipeline::Handlers::ProcessFile do
     describe 'when the file is an image' do
       let(:event) { DataPipeline::Support::Events.image_added }
 
-      it 'puts the attachment file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
+      it 'puts the attachment file in the UNPROCESSABLE_BUCKET using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to eq('sheffield/image.png')

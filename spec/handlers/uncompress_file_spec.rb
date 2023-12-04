@@ -1,35 +1,37 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 require './handler'
 
 describe DataPipeline::Handlers::UncompressFile do
-
   describe '#process' do
-
     let(:sheffield_csv) { File.open('spec/support/files/sheffield_export.csv') }
     let(:sheffield_zip) { File.open('spec/support/files/sheffield_export.zip') }
     let(:unknown_file) { File.open('spec/support/files/1x1.png') }
 
-    let(:logger){ Logger.new(IO::NULL) }
+    let(:logger) { Logger.new(IO::NULL) }
     let(:client) { Aws::S3::Client.new(stub_responses: true) }
-    let(:environment) {
+    let(:environment) do
       {
         'PROCESS_BUCKET' => 'process-bucket',
         'UNPROCESSABLE_BUCKET' => 'unprocessable-bucket'
       }
-    }
+    end
 
-    let(:handler){ DataPipeline::Handlers::UncompressFile }
-    let(:response){ DataPipeline::Handler.run(handler: handler, event: event, client: client, environment: environment, logger: logger) }
+    let(:handler) { described_class }
+    let(:response) do
+      DataPipeline::Handler.run(handler:, event:, client:, environment:, logger:)
+    end
 
     before do
       client.stub_responses(
-        :get_object, ->(context) {
+        :get_object, lambda { |context|
           case context.params[:key]
           when 'sheffield/export.zip'
-            { body: sheffield_zip}
+            { body: sheffield_zip }
           when 'sheffield/image.png'
-            { body: unknown_file}
+            { body: unknown_file }
           else
             'NotFound'
           end
@@ -39,8 +41,7 @@ describe DataPipeline::Handlers::UncompressFile do
     end
 
     describe 'when the file is a zip' do
-
-      let(:event){ DataPipeline::Support::Events.zip_added }
+      let(:event) { DataPipeline::Support::Events.zip_added }
 
       it 'puts the unzipped file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -52,12 +53,10 @@ describe DataPipeline::Handlers::UncompressFile do
       it 'returns a success code' do
         expect(response[:statusCode]).to eq(200)
       end
-
     end
 
     describe 'when the file does not unzip' do
-
-      let(:event){ DataPipeline::Support::Events.image_added }
+      let(:event) { DataPipeline::Support::Events.image_added }
 
       it 'puts the file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
@@ -69,9 +68,6 @@ describe DataPipeline::Handlers::UncompressFile do
       it 'returns a success code' do
         expect(response[:statusCode]).to eq(200)
       end
-
     end
-
   end
-
 end

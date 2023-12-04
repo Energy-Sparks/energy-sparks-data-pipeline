@@ -1,30 +1,33 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 require './handler'
 
 describe DataPipeline::Handlers::ConvertFile do
-
   describe '#process' do
     let(:npower_xls)   { File.open('spec/support/files/npower-eon_export.xls') }
     let(:npower_xlsx)  { File.open('spec/support/files/npower-eon_export.xlsx') }
-    let(:bryt_xlsx)  { File.open('spec/support/files/bryt_multi-sheet.xlsx') }
+    let(:bryt_xlsx) { File.open('spec/support/files/bryt_multi-sheet.xlsx') }
     let(:unknown_file) { File.open('spec/support/files/1x1.png') }
 
-    let(:logger){ Logger.new(IO::NULL) }
+    let(:logger) { Logger.new(IO::NULL) }
     let(:client) { Aws::S3::Client.new(stub_responses: true) }
-    let(:environment) {
+    let(:environment) do
       {
         'PROCESS_BUCKET' => 'process-bucket',
         'UNPROCESSABLE_BUCKET' => 'unprocessable-bucket'
       }
-    }
+    end
 
-    let(:handler) { DataPipeline::Handlers::ConvertFile }
-    let(:response) { DataPipeline::Handler.run(handler: handler, event: event, client: client, environment: environment, logger: logger) }
+    let(:handler) { described_class }
+    let(:response) do
+      DataPipeline::Handler.run(handler:, event:, client:, environment:, logger:)
+    end
 
     before do
       client.stub_responses(
-        :get_object, ->(context) {
+        :get_object, lambda { |context|
           case context.params[:key]
           when 'npower-eon/export.xls', 'npower-eon/export.XLS'
             { body: npower_xls }
@@ -33,7 +36,7 @@ describe DataPipeline::Handlers::ConvertFile do
           when 'bryt/multi-sheet.xlsx'
             { body: bryt_xlsx }
           when 'sheffield/image.png'
-            { body: unknown_file}
+            { body: unknown_file }
           else
             'NotFound'
           end

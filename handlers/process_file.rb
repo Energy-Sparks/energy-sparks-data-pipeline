@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 module DataPipeline
   module Handlers
     class ProcessFile < HandlerBase
-
       def process(key:, bucket:)
-        file = client.get_object(bucket: bucket, key: key)
+        file = client.get_object(bucket:, key:)
 
         next_bucket = next_bucket_finder(key)
 
@@ -21,12 +22,12 @@ module DataPipeline
         else
           file_body = file.body
         end
-        response = add_to_bucket(next_bucket, key: key, body: file_body, content_type: file.content_type)
+        response = add_to_bucket(next_bucket, key:, body: file_body, content_type: file.content_type)
 
-        respond 200, response: response
+        respond 200, response:
       end
 
-    private
+      private
 
       def remove_utf8_invalids(line)
         line.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
