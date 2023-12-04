@@ -22,3 +22,4 @@ s3.put_object(
   key: File.basename(attachment_name),
   body: mail.to_s
 )
+puts "uploaded #{attachment_name}"
