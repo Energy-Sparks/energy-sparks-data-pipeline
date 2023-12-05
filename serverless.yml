@@ -35,7 +35,7 @@ provider:
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
-    # this allows bundler to pick up gems in the ruby layer given that it appears as /opt/ruby/3.2.0
+    # this allows bundler to pick up git gems in the ruby layer given that it shows as /opt/ruby/3.2.0/bundler
     BUNDLE_PATH: /opt
   iam:
     role:
