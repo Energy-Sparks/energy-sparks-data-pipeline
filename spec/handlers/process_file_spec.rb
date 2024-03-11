@@ -38,7 +38,7 @@ describe DataPipeline::Handlers::ProcessFile do
       client.stub_responses(
         :get_object, lambda { |context|
           case context.params[:key]
-          when 'sheffield/export.csv', 'sheffield/export.CSV'
+          when 'sheffield/export.csv', 'sheffield/export.CSV', 'sheffield/export.cns', 'sheffield/export.CNS'
             { body: sheffield_csv }
           when 'sheffield/cr.csv'
             { body: cr_csv }
@@ -58,8 +58,6 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: npower_xls }
           when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
             { body: npower_xlsx }
-          when 'sheffield/export.cns', 'sheffield/export.CNS'
-            { body: sheffield_csv }
           else
             'NotFound'
           end
