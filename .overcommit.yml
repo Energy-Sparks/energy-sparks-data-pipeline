@@ -13,6 +13,9 @@
 # For a complete list of options that you can use to customize hooks, see:
 # https://github.com/sds/overcommit#configuration
 #
+
+gemfile: Gemfile
+
 PreCommit:
  RuboCop:
    enabled: true

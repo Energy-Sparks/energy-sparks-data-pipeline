@@ -12,6 +12,30 @@ takes data from the AMR data bucket for importing to EnergySparks.
 
 ## Buckets and functions
 
+The functions process files in the inbox bucket until they're converted into csv in the data bucket:
+
+  bucket: es-[env]-data-inbox      
+        |
+        v
+function: unpack attachments
+        |
+        v
+  bucket: es-[env]-data-process --------------> function: process file
+        ^                                              /|\ 
+        |                                             / | \  
+        |           ----------------------------------  |  ------------------------------------
+        |           |                                   |                                     | 
+        |           v                                   v                                     v
+        |       zip files                          xls/xlsx files                         csv files
+        |           |                                    |                                    | 
+        |           v                                    v                                    v
+        |     bucket: es-[env]-data-uncompressed   bucket: es-[env]-data-spreadsheet    bucket: es-[env]-data-amr-data   
+        |           |                                    |                                    
+        |           v                                    v                                    
+        |   function: uncompress file            function: convert file
+        |           |                                    | 
+        --------------------------------------------------      
+
 There are a series of buckets which the files move through during processing.
 An AWS lambda function is triggered by the addition of a file to a bucket,
 which then processes the file and moves it onto another bucket which in turn
@@ -44,7 +68,7 @@ the process bucket. Unregognised files are put in the unprocessable bucket.
 
 Contains spreadsheets that need to be converted to csv.
 Triggers the "convert file" function which converts xls and xlsx spreadsheet
-files to csv and puts them in the process bucket. Unregognised files are put in
+files to csv and puts them in the process bucket. Unrecognised files are put in
 the unprocessable bucket.
 
 **es-[env]-data-unprocessable**
@@ -92,6 +116,8 @@ Install serverless using homebrew (`brew install serverless`) or using
 [npm](https://serverless.com/framework/docs/getting-started/). We are using
 serverless v3 which requires a version of node greater than 10.
 
+Serverless plugins need to be installed with `npm install`
+
 Add the serverless AWS credentials to a profile called `serverless` in your
 `~/.aws/credentials` file (these credentials can be found in a document titled
 'Serverless AWS credentials' in 1password):
@@ -123,17 +149,16 @@ As we are using ruby gems with native dependencies (i.e. Nokogiri), we use
 Docker to build the Gems in an environment that is the same as AWS Lambda.
 These can then be published to a lambda layer which is used by the functions.
 
-To build the gems with docker but without deploying, run `rake deploy:build`.
+To build the packages with docker but without deploying, run `sls package`.
 
 If there is a permissions error when running docker, you may have to
 [add your user to the docker group](https://linuxhandbook.com/docker-permission-denied/):
 `sudo usermod -aG docker $USER`.
 
-Run `rake deploy:ENVIRONMENT` to build the gems with docker and deploy the
-pipeline to AWS. e.g. `rake deploy:development`.
+Run `sls deploy --stage ENVIRONMENT` to build the gems with docker and deploy the
+pipeline to AWS. e.g. `sls deploy --stage development`.
 
-Running `sls deploy` manually will deploy the `development` stage by default
-but will skip building & packaging the gems.
+Running `sls deploy` manually will deploy the `development` stage by default.
 
 To deploy to a different stage use the --stage option
 e.g. `sls deploy --stage test`.
