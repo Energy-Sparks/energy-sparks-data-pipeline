@@ -121,6 +121,14 @@ module DataPipeline
         file_event(filename: 'sheffield/image.png', bucket: 'file-bucket')
       end
 
+      def self.cns_added
+        file_event(filename: 'sheffield/export.cns', bucket: 'file-bucket')
+      end
+
+      def self.uppercase_cns_added
+        file_event(filename: 'sheffield/export.CNS', bucket: 'file-bucket')
+      end
+
       def self.missing_file
         file_event(filename: 'missing.txt', bucket: 'email-bucket')
       end

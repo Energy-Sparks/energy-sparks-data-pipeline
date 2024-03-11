@@ -40,6 +40,7 @@ module DataPipeline
       def next_bucket_finder(key)
         case key
         when /csv\Z/i then :amr_data
+        when /cns\Z/i then :amr_data
         when /zip\Z/i then :compressed
         when /xlsx?\Z/i then :spreadsheet
         else :unprocessable

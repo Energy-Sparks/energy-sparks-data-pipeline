@@ -58,6 +58,8 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: npower_xls }
           when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
             { body: npower_xlsx }
+          when 'sheffield/export.cns', 'sheffield/export.CNS'
+            { body: sheffield_csv }
           else
             'NotFound'
           end
@@ -89,6 +91,28 @@ describe DataPipeline::Handlers::ProcessFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to eq('sheffield/export.CSV')
+        expect(request[:params][:bucket]).to eq('data-bucket')
+      end
+    end
+
+    describe 'when the file is a .cns' do
+      let(:event) { DataPipeline::Support::Events.cns_added }
+
+      it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.cns')
+        expect(request[:params][:bucket]).to eq('data-bucket')
+      end
+    end
+
+    describe 'when the file is a .CNS' do
+      let(:event) { DataPipeline::Support::Events.uppercase_cns_added }
+
+      it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.CNS')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
     end
