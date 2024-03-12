@@ -38,7 +38,7 @@ describe DataPipeline::Handlers::ProcessFile do
       client.stub_responses(
         :get_object, lambda { |context|
           case context.params[:key]
-          when 'sheffield/export.csv', 'sheffield/export.CSV'
+          when 'sheffield/export.csv', 'sheffield/export.CSV', 'sheffield/export.cns', 'sheffield/export.CNS'
             { body: sheffield_csv }
           when 'sheffield/cr.csv'
             { body: cr_csv }
@@ -89,6 +89,28 @@ describe DataPipeline::Handlers::ProcessFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to eq('sheffield/export.CSV')
+        expect(request[:params][:bucket]).to eq('data-bucket')
+      end
+    end
+
+    describe 'when the file is a .cns' do
+      let(:event) { DataPipeline::Support::Events.cns_added }
+
+      it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.cns')
+        expect(request[:params][:bucket]).to eq('data-bucket')
+      end
+    end
+
+    describe 'when the file is a .CNS' do
+      let(:event) { DataPipeline::Support::Events.uppercase_cns_added }
+
+      it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
+        request = client.api_requests.last
+        expect(request[:operation_name]).to eq(:put_object)
+        expect(request[:params][:key]).to eq('sheffield/export.CNS')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
     end
