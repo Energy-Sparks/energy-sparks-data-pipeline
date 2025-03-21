@@ -22,3 +22,7 @@ group :development do
   gem 'overcommit'
   gem 'rubocop-rspec'
 end
+
+group :development, :test do
+  gem 'debug'
+end

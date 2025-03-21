@@ -15,7 +15,7 @@ module DataPipeline
         sent_to = email.header['X-Forwarded-To'] || email.to.first
         logger.info("Receipt address: #{sent_to}")
 
-        prefix = sent_to.to_s.split('@').first
+        prefix = "#{sent_to.to_s.split('@').first}/#{key}"
         logger.info("Prefix: #{prefix}")
 
         responses = if email.attachments.any?

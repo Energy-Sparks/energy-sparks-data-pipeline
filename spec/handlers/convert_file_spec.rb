@@ -29,13 +29,13 @@ describe DataPipeline::Handlers::ConvertFile do
       client.stub_responses(
         :get_object, lambda { |context|
           case context.params[:key]
-          when 'npower-eon/export.xls', 'npower-eon/export.XLS'
+          when 'npower-eon/email-id/export.xls', 'npower-eon/email-id/export.XLS'
             { body: npower_xls }
-          when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
+          when 'npower-eon/email-id/export.xlsx', 'npower-eon/email-id/export.XLSX'
             { body: npower_xlsx }
-          when 'bryt/multi-sheet.xlsx'
+          when 'bryt/email-id/multi-sheet.xlsx'
             { body: bryt_xlsx }
-          when 'sheffield/image.png'
+          when 'sheffield/email-id/image.png'
             { body: unknown_file }
           else
             'NotFound'
@@ -52,7 +52,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('process-bucket')
-        expect(request[:params][:key]).to eq('npower-eon/export.xlsx.csv')
+        expect(request[:params][:key]).to eq('npower-eon/email-id/export.xlsx.csv')
       end
 
       it 'returns a success code' do
@@ -67,7 +67,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('process-bucket')
-        expect(request[:params][:key]).to eq('bryt/multi-sheet.xlsx.csv')
+        expect(request[:params][:key]).to eq('bryt/email-id/multi-sheet.xlsx.csv')
       end
 
       it 'returns a success code' do
@@ -82,7 +82,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('process-bucket')
-        expect(request[:params][:key]).to eq('npower-eon/export.XLSX.csv')
+        expect(request[:params][:key]).to eq('npower-eon/email-id/export.XLSX.csv')
       end
 
       it 'returns a success code' do
@@ -97,7 +97,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('process-bucket')
-        expect(request[:params][:key]).to eq('npower-eon/export.xls.csv')
+        expect(request[:params][:key]).to eq('npower-eon/email-id/export.xls.csv')
       end
 
       it 'returns a success code' do
@@ -112,7 +112,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('process-bucket')
-        expect(request[:params][:key]).to eq('npower-eon/export.XLS.csv')
+        expect(request[:params][:key]).to eq('npower-eon/email-id/export.XLS.csv')
       end
 
       it 'returns a success code' do
@@ -127,7 +127,7 @@ describe DataPipeline::Handlers::ConvertFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:bucket]).to eq('unprocessable-bucket')
-        expect(request[:params][:key]).to eq('sheffield/image.png')
+        expect(request[:params][:key]).to eq('sheffield/email-id/image.png')
       end
 
       it 'returns a success code' do
