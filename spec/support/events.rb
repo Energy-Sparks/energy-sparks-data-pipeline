@@ -61,15 +61,15 @@ module DataPipeline
       end
 
       def self.csv_added
-        file_event(filename: 'sheffield/email-id/export.csv', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.csv', bucket: 'file-bucket')
       end
 
       def self.uppercase_csv_added
-        file_event(filename: 'sheffield/email-id/export.CSV', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.CSV', bucket: 'file-bucket')
       end
 
       def self.cr_csv_added
-        file_event(filename: 'sheffield/email-id/cr.csv', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/cr.csv', bucket: 'file-bucket')
       end
 
       def self.cr_empty_lines_csv_added
@@ -85,49 +85,49 @@ module DataPipeline
       end
 
       def self.csv_sheffield_gas_added
-        file_event(filename: 'sheffield-gas/email-id/' \
+        file_event(filename: 'sheffield-gas/20250323-101112/' \
                              'Sheffield+City+Council+-+Energy+Sparks+%28Daily+Email%2920190303.csv',
                    bucket: 'file-bucket')
       end
 
       def self.zip_added
-        file_event(filename: 'sheffield/email-id/export.zip', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.zip', bucket: 'file-bucket')
       end
 
       def self.uppercase_zip_added
-        file_event(filename: 'sheffield/email-id/export.ZIP', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.ZIP', bucket: 'file-bucket')
       end
 
       def self.xls_added
-        file_event(filename: 'npower-eon/email-id/export.xls', bucket: 'file-bucket')
+        file_event(filename: 'npower-eon/20250323-101112/export.xls', bucket: 'file-bucket')
       end
 
       def self.uppercase_xls_added
-        file_event(filename: 'npower-eon/email-id/export.XLS', bucket: 'file-bucket')
+        file_event(filename: 'npower-eon/20250323-101112/export.XLS', bucket: 'file-bucket')
       end
 
       def self.xlsx_added
-        file_event(filename: 'npower-eon/email-id/export.xlsx', bucket: 'file-bucket')
+        file_event(filename: 'npower-eon/20250323-101112/export.xlsx', bucket: 'file-bucket')
       end
 
       def self.xlsx_multi_added
-        file_event(filename: 'bryt/email-id/multi-sheet.xlsx', bucket: 'file-bucket')
+        file_event(filename: 'bryt/20250323-101112/multi-sheet.xlsx', bucket: 'file-bucket')
       end
 
       def self.uppercase_xlsx_added
-        file_event(filename: 'npower-eon/email-id/export.XLSX', bucket: 'file-bucket')
+        file_event(filename: 'npower-eon/20250323-101112/export.XLSX', bucket: 'file-bucket')
       end
 
       def self.image_added
-        file_event(filename: 'sheffield/email-id/image.png', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/image.png', bucket: 'file-bucket')
       end
 
       def self.cns_added
-        file_event(filename: 'sheffield/email-id/export.cns', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.cns', bucket: 'file-bucket')
       end
 
       def self.uppercase_cns_added
-        file_event(filename: 'sheffield/email-id/export.CNS', bucket: 'file-bucket')
+        file_event(filename: 'sheffield/20250323-101112/export.CNS', bucket: 'file-bucket')
       end
 
       def self.missing_file

@@ -28,9 +28,9 @@ describe DataPipeline::Handlers::UncompressFile do
       client.stub_responses(
         :get_object, lambda { |context|
           case context.params[:key]
-          when 'sheffield/email-id/export.zip'
+          when 'sheffield/20250323-101112/export.zip'
             { body: sheffield_zip }
-          when 'sheffield/email-id/image.png'
+          when 'sheffield/20250323-101112/image.png'
             { body: unknown_file }
           else
             'NotFound'
@@ -46,7 +46,7 @@ describe DataPipeline::Handlers::UncompressFile do
       it 'puts the unzipped file in the PROCESS_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/email-id/4003063_9232_Export_20181108_120524_290.csv')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/4003063_9232_Export_20181108_120524_290.csv')
         expect(request[:params][:bucket]).to eq('process-bucket')
       end
 
@@ -61,7 +61,7 @@ describe DataPipeline::Handlers::UncompressFile do
       it 'puts the file in the UNPROCESSABLE_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/email-id/image.png')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/image.png')
         expect(request[:params][:bucket]).to eq('unprocessable-bucket')
       end
 

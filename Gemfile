@@ -14,6 +14,7 @@ gem 'roo-xls'
 group :test do
   gem 'bundler-audit'
   gem 'rspec'
+  gem 'timecop'
 end
 
 group :development do
