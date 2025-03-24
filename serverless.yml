@@ -13,8 +13,8 @@ custom:
   rubyLayer:
     use_docker: true
     environment:
-      # the lambda environment appears quite old as the precompiled nokogirii doesn't work so we need this to force
-      # a compiled version in the docker environment to be built
+      # the lambda environment appears quite old as the precompiled nokogiri doesn't work so we need this to force
+      # compiling a version in the docker environment
       - BUNDLE_FORCE_RUBY_PLATFORM=true
   currentStage: ${opt:stage, 'development'}
   buckets:
@@ -28,7 +28,7 @@ custom:
 provider:
   name: aws
   runtime: ruby3.2
-  profile: serverless
+  # profile: serverless
   region: eu-west-2
   stage: ${opt:stage, 'development'}
   environment:
