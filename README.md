@@ -14,6 +14,7 @@ takes data from the AMR data bucket for importing to EnergySparks.
 
 The functions process files in the inbox bucket until they're converted into csv in the data bucket:
 
+```
   bucket: es-[env]-data-inbox      
         |
         v
@@ -35,6 +36,7 @@ function: unpack attachments
         |   function: uncompress file            function: convert file
         |           |                                    | 
         --------------------------------------------------      
+```
 
 There are a series of buckets which the files move through during processing.
 An AWS lambda function is triggered by the addition of a file to a bucket,
