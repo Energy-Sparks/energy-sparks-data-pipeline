@@ -67,6 +67,7 @@ package:
 functions:
   unpack-attachments:
     handler: handler.DataPipeline::Handler.unpack_attachments
+    timeout: 10
     events:
       - s3: ${self:provider.environment.INBOX_BUCKET}
   process-file:
@@ -79,6 +80,7 @@ functions:
       - s3: ${self:provider.environment.COMPRESSED_BUCKET}
   convert:
     handler: handler.DataPipeline::Handler.convert_file
+    timeout: 30
     events:
       - s3: ${self:provider.environment.SPREADSHEET_BUCKET}
 
