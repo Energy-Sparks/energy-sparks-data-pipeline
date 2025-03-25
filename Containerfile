@@ -3,6 +3,7 @@ FROM public.ecr.aws/sam/build-ruby3.2:latest-x86_64
 RUN mkdir /ruby
 WORKDIR /ruby
 COPY Gemfile Gemfile.lock .
+# might need this with newer lambda runtimes
 ENV BUNDLE_FORCE_RUBY_PLATFORM=true
 ENV BUNDLE_WITHOUT=test:development
 ENV BUNDLE_PATH=build
