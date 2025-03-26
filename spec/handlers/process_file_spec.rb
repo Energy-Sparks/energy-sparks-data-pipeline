@@ -38,9 +38,10 @@ describe DataPipeline::Handlers::ProcessFile do
       client.stub_responses(
         :get_object, lambda { |context|
           case context.params[:key]
-          when 'sheffield/export.csv', 'sheffield/export.CSV', 'sheffield/export.cns', 'sheffield/export.CNS'
+          when 'sheffield/20250323-101112/export.csv', 'sheffield/20250323-101112/export.CSV',
+               'sheffield/20250323-101112/export.cns', 'sheffield/20250323-101112/export.CNS'
             { body: sheffield_csv }
-          when 'sheffield/cr.csv'
+          when 'sheffield/20250323-101112/cr.csv'
             { body: cr_csv }
           when 'cr_empty_lines.csv'
             { body: cr_empty_lines_csv }
@@ -48,15 +49,15 @@ describe DataPipeline::Handlers::ProcessFile do
             { body: highlands_invalid_character_csv }
           when 'highlands.csv'
             { body: highlands_csv }
-          when 'sheffield/export.zip', 'sheffield/export.ZIP'
+          when 'sheffield/20250323-101112/export.zip', 'sheffield/20250323-101112/export.ZIP'
             { body: sheffield_zip }
-          when 'sheffield/image.png'
+          when 'sheffield/20250323-101112/image.png'
             { body: unknown_file }
-          when 'sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
+          when 'sheffield-gas/20250323-101112/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv'
             { body: sheffield_gas_csv }
-          when 'npower-eon/export.xls', 'npower-eon/export.XLS'
+          when 'npower-eon/20250323-101112/export.xls', 'npower-eon/20250323-101112/export.XLS'
             { body: npower_xls }
-          when 'npower-eon/export.xlsx', 'npower-eon/export.XLSX'
+          when 'npower-eon/20250323-101112/export.xlsx', 'npower-eon/20250323-101112/export.XLSX'
             { body: npower_xlsx }
           else
             'NotFound'
@@ -73,7 +74,7 @@ describe DataPipeline::Handlers::ProcessFile do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
         expect(request[:params][:key]).to \
-          eq('sheffield-gas/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv')
+          eq('sheffield-gas/20250323-101112/Sheffield City Council - Energy Sparks (Daily Email)20190303.csv')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
 
@@ -88,7 +89,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.CSV')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.CSV')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
     end
@@ -99,7 +100,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.cns')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.cns')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
     end
@@ -110,7 +111,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.CNS')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.CNS')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
     end
@@ -121,7 +122,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the AMR_DATA_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.csv')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.csv')
         expect(request[:params][:bucket]).to eq('data-bucket')
       end
 
@@ -176,7 +177,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.ZIP')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.ZIP')
         expect(request[:params][:bucket]).to eq('compressed-bucket')
       end
 
@@ -191,7 +192,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the COMPRESSED_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/export.zip')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/export.zip')
         expect(request[:params][:bucket]).to eq('compressed-bucket')
       end
 
@@ -206,7 +207,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.xls')
+        expect(request[:params][:key]).to eq('npower-eon/20250323-101112/export.xls')
         expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
       end
 
@@ -221,7 +222,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.XLS')
+        expect(request[:params][:key]).to eq('npower-eon/20250323-101112/export.XLS')
         expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
       end
 
@@ -236,7 +237,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the SPREADSHEET_BUCKET from the environment using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.xlsx')
+        expect(request[:params][:key]).to eq('npower-eon/20250323-101112/export.xlsx')
         expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
       end
 
@@ -251,7 +252,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the SPREADSHEET_BUCKET using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('npower-eon/export.XLSX')
+        expect(request[:params][:key]).to eq('npower-eon/20250323-101112/export.XLSX')
         expect(request[:params][:bucket]).to eq('spreadsheet-bucket')
       end
 
@@ -266,7 +267,7 @@ describe DataPipeline::Handlers::ProcessFile do
       it 'puts the attachment file in the UNPROCESSABLE_BUCKET using the key of the object added' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/image.png')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/image.png')
         expect(request[:params][:bucket]).to eq('unprocessable-bucket')
       end
 

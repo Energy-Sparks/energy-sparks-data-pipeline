@@ -46,9 +46,9 @@ describe DataPipeline::Handlers::UnpackAttachments do
       it 'puts the attachment file in the PROCESS_BUCKET from the environment using the prefix the email was sent to' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/4003063_9232_Export_20181108_120524_290.zip')
-        expect(request[:params][:bucket]).to eq('test-bucket')
-        expect(request[:params][:content_type]).to eq('application/zip')
+        expect(request[:params]).to \
+          include(key: 'sheffield/20250323-101112/4003063_9232_Export_20181108_120524_290.zip',
+                  bucket: 'test-bucket', content_type: 'application/zip')
       end
 
       it 'returns a success code' do
@@ -67,7 +67,7 @@ describe DataPipeline::Handlers::UnpackAttachments do
       it 'uses the forwarded to header instead of the to field' do
         request = client.api_requests.last
         expect(request[:operation_name]).to eq(:put_object)
-        expect(request[:params][:key]).to eq('sheffield/4003063_9232_Export_20190227_120407_366.zip')
+        expect(request[:params][:key]).to eq('sheffield/20250323-101112/4003063_9232_Export_20190227_120407_366.zip')
       end
     end
 
@@ -126,7 +126,7 @@ describe DataPipeline::Handlers::UnpackAttachments do
     it 'puts the downloads file in the PROCESS_BUCKET from the environment using the prefix the email was sent to' do
       request = client.api_requests.last
       expect(request[:operation_name]).to eq(:put_object)
-      expect(request[:params][:key]).to eq('data/WC-EnergySparksLast7Days_161120212207.csv')
+      expect(request[:params][:key]).to eq('data/20250323-101112/WC-EnergySparksLast7Days_161120212207.csv')
       expect(request[:params][:bucket]).to eq('test-bucket')
       expect(request[:params][:content_type]).to eq('application/vnd.ms-excel')
     end

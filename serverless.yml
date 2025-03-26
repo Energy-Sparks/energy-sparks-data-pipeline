@@ -28,7 +28,7 @@ custom:
 provider:
   name: aws
   runtime: ruby3.2
-  profile: serverless
+  # profile: serverless
   region: eu-west-2
   stage: ${opt:stage, 'development'}
   environment:

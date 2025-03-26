@@ -7,7 +7,7 @@ module DataPipeline
     class UncompressFile < HandlerBase
       def process(key:, bucket:)
         file = client.get_object(bucket:, key:)
-        prefix = key.split('/').first
+        prefix = key.rpartition('/').first
 
         responses = []
         begin

@@ -14,6 +14,7 @@ gem 'roo-xls'
 group :test do
   gem 'bundler-audit'
   gem 'rspec'
+  gem 'timecop'
 end
 
 group :development do
@@ -21,4 +22,8 @@ group :development do
   gem 'guard-rspec', require: false
   gem 'overcommit'
   gem 'rubocop-rspec'
+end
+
+group :development, :test do
+  gem 'debug'
 end

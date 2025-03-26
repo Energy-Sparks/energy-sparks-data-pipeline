@@ -19,7 +19,7 @@ mail.add_file(filename: "#{File.basename(attachment_name)}.zip", content: buffer
 s3 = Aws::S3::Client.new
 s3.put_object(
   bucket: 'es-development-data-inbox',
-  key: File.basename(attachment_name),
+  key: File.basename(attachment_name, '.*'),
   body: mail.to_s
 )
 puts "uploaded #{attachment_name}"
