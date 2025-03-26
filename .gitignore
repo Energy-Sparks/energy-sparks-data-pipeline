@@ -8,3 +8,5 @@
 .bundle
 .serverless
 node_modules
+
+build
