@@ -96,7 +96,7 @@ Run `bundle exec guard` to run tests automatically as files change.
 ## Serverless
 
 The setup of the buckets, lambdas and associated permissions is managed
-by the [serverless](https://serverless.com/) framework which creates and
+by the [serverless](https://github.com/oss-serverless/serverless) framework (v3 fork) which creates and
 updates a CloudFormation stack on AWS.
 
 Serverless allows us to set a 'stage' and run multiple environments
