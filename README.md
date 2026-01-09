@@ -114,15 +114,12 @@ change to the configuration.
 
 ## Deployment configuration
 
-Install [osls](https://github.com/oss-serverless/serverless). We are using
-version 3 which requires a version of node greater than 10.
+Install [osls](https://github.com/oss-serverless/serverless).
 
-Serverless plugins need to be installed with `npm install`
+Plugins need to be installed with `npm install`
 
-Add the serverless AWS credentials to a profile called `serverless` in your
-`~/.aws/credentials` file (these credentials can be found in a document titled
-'Serverless AWS credentials' in 1password):
-
+AWS credentials are required, for example with a profile called `serverless` in your
+`~/.aws/credentials` file.
 ```
 [serverless]
 aws_access_key_id = YOURKEYHERE123
