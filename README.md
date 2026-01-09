@@ -114,9 +114,8 @@ change to the configuration.
 
 ## Deployment configuration
 
-Install serverless using homebrew (`brew install serverless`) or using
-[npm](https://serverless.com/framework/docs/getting-started/). We are using
-serverless v3 which requires a version of node greater than 10.
+Install [osls](https://github.com/oss-serverless/serverless). We are using
+version 3 which requires a version of node greater than 10.
 
 Serverless plugins need to be installed with `npm install`
 
