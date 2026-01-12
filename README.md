@@ -96,7 +96,7 @@ Run `bundle exec guard` to run tests automatically as files change.
 ## Serverless
 
 The setup of the buckets, lambdas and associated permissions is managed
-by the [serverless](https://serverless.com/) framework which creates and
+by the [serverless](https://github.com/oss-serverless/serverless) framework (v3 fork) which creates and
 updates a CloudFormation stack on AWS.
 
 Serverless allows us to set a 'stage' and run multiple environments
@@ -114,16 +114,12 @@ change to the configuration.
 
 ## Deployment configuration
 
-Install serverless using homebrew (`brew install serverless`) or using
-[npm](https://serverless.com/framework/docs/getting-started/). We are using
-serverless v3 which requires a version of node greater than 10.
+Install [osls](https://github.com/oss-serverless/serverless).
 
-Serverless plugins need to be installed with `npm install`
+Plugins need to be installed with `npm install`
 
-Add the serverless AWS credentials to a profile called `serverless` in your
-`~/.aws/credentials` file (these credentials can be found in a document titled
-'Serverless AWS credentials' in 1password):
-
+AWS credentials are required, for example with a profile called `serverless` in your
+`~/.aws/credentials` file.
 ```
 [serverless]
 aws_access_key_id = YOURKEYHERE123
