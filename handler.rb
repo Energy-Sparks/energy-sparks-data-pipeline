@@ -44,7 +44,7 @@ module DataPipeline
     end
 
     def self.copy(event:, context:)
-      run(handler: DataPipeline::Handlers::SftpCopy, event:, context:)
+      run(handler: DataPipeline::Handlers::Copy, event:, context:)
     end
   end
 end
