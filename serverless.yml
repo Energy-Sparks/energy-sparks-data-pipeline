@@ -24,6 +24,7 @@ custom:
     spreadsheet_bucket: es-${self:custom.currentStage}-data-spreadsheet
     amr_data_bucket: es-${self:custom.currentStage}-data-amr-data
     unprocessable_bucket: es-${self:custom.currentStage}-data-unprocessable
+    sftp_bucket: es-production-data-sftp
 
 provider:
   name: aws
@@ -38,6 +39,7 @@ provider:
     SPREADSHEET_BUCKET: ${self:custom.buckets.spreadsheet_bucket}
     AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
     UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
+    SFTP_BUCKET: ${self:custom.buckets.sftp_bucket}
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
     # this allows bundler to pick up git gems in /opt/ruby/3.2.0/bundler from the ruby layer
     BUNDLE_PATH: /opt
@@ -55,6 +57,7 @@ provider:
             - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
             - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
             - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
+            - "arn:aws:s3:::${self:custom.buckets.sftp_bucket}/*"
 
 package:
   patterns:
@@ -70,6 +73,13 @@ functions:
     timeout: 10
     events:
       - s3: ${self:provider.environment.INBOX_BUCKET}
+  sftp-copy:
+    handler: handler.DataPipeline::Handler.copy
+    timeout: 15
+    events:
+      - s3:
+          bucket: ${self:provider.environment.SFTP_BUCKET}
+          existing: true
   process-file:
     handler: handler.DataPipeline::Handler.process_file
     events:

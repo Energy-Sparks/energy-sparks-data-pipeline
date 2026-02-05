@@ -8,6 +8,7 @@ require './handlers/process_file'
 require './handlers/uncompress_file'
 require './handlers/unpack_attachments'
 require './handlers/convert_file'
+require './handlers/copy'
 require 'aws-sdk-s3'
 require 'rollbar'
 
@@ -40,6 +41,10 @@ module DataPipeline
 
     def self.convert_file(event:, context:)
       run(handler: DataPipeline::Handlers::ConvertFile, event:, context:)
+    end
+
+    def self.copy(event:, context:)
+      run(handler: DataPipeline::Handlers::SftpCopy, event:, context:)
     end
   end
 end
