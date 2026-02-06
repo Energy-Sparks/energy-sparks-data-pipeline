@@ -19,6 +19,8 @@ module DataPipeline
         Rollbar.error(e)
       end
 
+      private
+
       def copy(from, to)
         @client.copy_object(bucket: bucket_name(:process), copy_source: URI::DEFAULT_PARSER.escape(from), key: to)
         logger.info("Copied to #{copy_key}")
