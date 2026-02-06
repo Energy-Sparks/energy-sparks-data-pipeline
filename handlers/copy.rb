@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'faraday'
-
 module DataPipeline
   module Handlers
     # simple copy object into process bucket
