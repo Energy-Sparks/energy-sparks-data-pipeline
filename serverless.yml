@@ -16,15 +16,6 @@ custom:
       # the lambda environment appears quite old as the precompiled nokogiri doesn't work so we need this to force
       # compiling a version in the docker environment
       - BUNDLE_FORCE_RUBY_PLATFORM=true
-  currentStage: ${opt:stage, 'development'}
-  buckets:
-    inbox_bucket: es-${self:custom.currentStage}-data-inbox
-    process_bucket: es-${self:custom.currentStage}-data-process
-    compressed_bucket: es-${self:custom.currentStage}-data-uncompressed
-    spreadsheet_bucket: es-${self:custom.currentStage}-data-spreadsheet
-    amr_data_bucket: es-${self:custom.currentStage}-data-amr-data
-    unprocessable_bucket: es-${self:custom.currentStage}-data-unprocessable
-    sftp_bucket: es-production-data-sftp
 
 provider:
   name: aws
@@ -33,13 +24,13 @@ provider:
   region: eu-west-2
   stage: ${opt:stage, 'development'}
   environment:
-    INBOX_BUCKET: ${self:custom.buckets.inbox_bucket}
-    PROCESS_BUCKET: ${self:custom.buckets.process_bucket}
-    COMPRESSED_BUCKET: ${self:custom.buckets.compressed_bucket}
-    SPREADSHEET_BUCKET: ${self:custom.buckets.spreadsheet_bucket}
-    AMR_DATA_BUCKET: ${self:custom.buckets.amr_data_bucket}
-    UNPROCESSABLE_BUCKET: ${self:custom.buckets.unprocessable_bucket}
-    SFTP_BUCKET: ${self:custom.buckets.sftp_bucket}
+    INBOX_BUCKET: es-${self:provider.stage}-data-inbox
+    PROCESS_BUCKET: es-${self:provider.stage}-data-process
+    COMPRESSED_BUCKET: es-${self:provider.stage}-data-uncompressed
+    SPREADSHEET_BUCKET: es-${self:provider.stage}-data-spreadsheet
+    AMR_DATA_BUCKET: es-${self:provider.stage}-data-amr-data
+    UNPROCESSABLE_BUCKET: es-${self:provider.stage}-data-unprocessable
+    SFTP_BUCKET: es-${self:provider.stage}-data-sftp
     ROLLBAR_ACCESS_TOKEN: ${env:ROLLBAR_ACCESS_TOKEN}
     # this allows bundler to pick up git gems in /opt/ruby/3.2.0/bundler from the ruby layer
     BUNDLE_PATH: /opt
@@ -51,13 +42,13 @@ provider:
             - "s3:*"
           Resource:
             - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
-            - "arn:aws:s3:::${self:custom.buckets.inbox_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.process_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.compressed_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.spreadsheet_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.amr_data_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.unprocessable_bucket}/*"
-            - "arn:aws:s3:::${self:custom.buckets.sftp_bucket}/*"
+            - "arn:aws:s3:::${self:provider.environment.INBOX_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.PROCESS_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.COMPRESSED_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.SPREADSHEET_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.AMR_DATA_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.UNPROCESSABLE_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.SFTP_BUCKET}/*"
 
 package:
   patterns:
@@ -77,9 +68,7 @@ functions:
     handler: handler.DataPipeline::Handler.copy
     timeout: 15
     events:
-      - s3:
-          bucket: ${self:provider.environment.SFTP_BUCKET}
-          existing: true
+      - s3: ${self:provider.environment.SFTP_BUCKET}
   process-file:
     handler: handler.DataPipeline::Handler.process_file
     events:
@@ -98,10 +87,10 @@ resources:
   Resources:
     InboxS3Policy:
       Type: AWS::S3::BucketPolicy
-      DependsOn: S3BucketEs${self:custom.currentStage}datainbox
+      DependsOn: S3BucketEs${self:provider.stage}datainbox
       Properties:
         Bucket:
-          Ref: S3BucketEs${self:custom.currentStage}datainbox
+          Ref: S3BucketEs${self:provider.stage}datainbox
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
