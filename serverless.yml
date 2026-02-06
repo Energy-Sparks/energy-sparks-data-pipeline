@@ -49,6 +49,14 @@ provider:
             - "arn:aws:s3:::${self:provider.environment.AMR_DATA_BUCKET}/*"
             - "arn:aws:s3:::${self:provider.environment.UNPROCESSABLE_BUCKET}/*"
             - "arn:aws:s3:::${self:provider.environment.SFTP_BUCKET}/*"
+  s3:
+    sftpBucket:
+      name: ${self:provider.environment.SFTP_BUCKET}
+      lifecycleConfiguration:
+        Rules:
+          - Id: Expires
+            Status: Enabled
+            ExpirationInDays: 30
 
 package:
   patterns:
@@ -68,7 +76,7 @@ functions:
     handler: handler.DataPipeline::Handler.copy
     timeout: 15
     events:
-      - s3: ${self:provider.environment.SFTP_BUCKET}
+      - s3: sftpBucket
   process-file:
     handler: handler.DataPipeline::Handler.process_file
     events:
@@ -113,3 +121,9 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.UNPROCESSABLE_BUCKET}
+    S3BucketEsdevelopmentdatainbox:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        BucketName: ${self:provider.environment.INBOX_BUCKET}
