@@ -3,7 +3,7 @@
 module DataPipeline
   module Support
     class Events
-      def self.file_event(filename:, bucket:)
+      def self.file_event(filename:, bucket: 'bucket')
         {
           'Records' => [
             {

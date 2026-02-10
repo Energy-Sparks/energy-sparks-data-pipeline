@@ -45,6 +45,10 @@ module DataPipeline
       def respond(status_code, content)
         { statusCode: status_code, body: JSON.generate(content) }
       end
+
+      def prefix_timestamp
+        Time.now.utc.strftime('%Y%m%d-%H%M%S')
+      end
     end
   end
 end
