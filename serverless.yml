@@ -121,9 +121,3 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.UNPROCESSABLE_BUCKET}
-    S3BucketEsdevelopmentdatainbox:
-      Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
-      UpdateReplacePolicy: Retain
-      Properties:
-        BucketName: ${self:provider.environment.INBOX_BUCKET}
